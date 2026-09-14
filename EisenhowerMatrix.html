@@ -1,0 +1,672 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #DCE2E4;
+    --plane: #F4F6F6;
+    --ink: #11161A;
+    --muted: #6C777C;
+    --rule: #C2CACD;
+    --accent: #14536E;
+    --accent-soft: rgba(20, 83, 110, 0.065);
+    --danger: #8C3A2B;
+  }
+
+  * { box-sizing: border-box; }
+
+  .eis {
+    font-family: Inter, system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    padding: 28px 24px 36px;
+    min-height: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .eis-wrap { max-width: 1040px; margin: 0 auto; }
+
+  /* ---- header ---- */
+  .eis-top {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap; margin-bottom: 22px;
+  }
+  .eis-title {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 40px; line-height: 1; margin: 0; letter-spacing: -0.01em;
+  }
+  .eis-sub { font-size: 13px; color: var(--muted); margin: 7px 0 0; }
+
+  .eis-tabs { display: flex; gap: 2px; background: var(--rule); padding: 2px; border-radius: 2px; }
+  .eis-tab {
+    font: inherit; font-size: 13.5px; font-weight: 500;
+    border: 0; background: transparent; color: var(--muted);
+    padding: 9px 18px; cursor: pointer; border-radius: 1px;
+  }
+  .eis-tab[aria-selected="true"] { background: var(--plane); color: var(--ink); }
+  .eis-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* ---- add bar ---- */
+  .eis-add {
+    display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+  .eis-input {
+    flex: 1 1 320px; min-width: 0;
+    font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--plane); border: 1px solid var(--rule); border-radius: 2px;
+    padding: 12px 14px;
+  }
+  .eis-input::placeholder { color: var(--muted); }
+  .eis-input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+
+  .eis-flags { display: flex; gap: 2px; background: var(--rule); padding: 2px; border-radius: 2px; }
+  .eis-flag {
+    font: inherit; font-size: 13px; font-weight: 500;
+    border: 0; background: var(--plane); color: var(--muted);
+    padding: 0 16px; cursor: pointer; border-radius: 1px; white-space: nowrap;
+  }
+  .eis-flag[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .eis-flag:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .eis-submit {
+    font: inherit; font-size: 13.5px; font-weight: 500;
+    border: 0; background: var(--ink); color: #fff;
+    padding: 0 22px; border-radius: 2px; cursor: pointer;
+  }
+  .eis-submit:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- the plane ---- */
+  .eis-plane { display: grid; grid-template-columns: 34px 1fr; gap: 10px; }
+
+  .eis-yaxis { display: grid; grid-template-rows: 1fr 1fr; gap: 10px; padding-top: 30px; }
+  .eis-ylabel {
+    display: flex; align-items: center; justify-content: center;
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 19px; color: var(--accent); white-space: nowrap;
+  }
+  .eis-ylabel.is-off { color: var(--muted); font-style: italic; }
+
+  .eis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .eis-xlabel {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 19px; color: var(--accent); padding-bottom: 8px;
+  }
+  .eis-xlabel.is-off { color: var(--muted); font-style: italic; }
+
+  .eis-quad {
+    background: var(--plane); border-radius: 2px;
+    border-top: 1px solid var(--rule);
+    padding: 16px 16px 12px; min-height: 190px;
+    display: flex; flex-direction: column;
+  }
+  .eis-quad.is-urgent { background: linear-gradient(var(--accent-soft), var(--accent-soft)), var(--plane); }
+  .eis-quad.is-important { border-top: 3px solid var(--accent); padding-top: 14px; }
+  .eis-quad.is-over { box-shadow: inset 0 0 0 2px var(--accent); }
+
+  .eis-quad-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 10px; margin-bottom: 12px;
+  }
+  .eis-quad-name {
+    font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; line-height: 1;
+  }
+  .eis-quad-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .eis-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; flex: 1; }
+
+  .eis-item {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 7px 6px 7px 7px; border-radius: 2px;
+    background: transparent; cursor: grab; position: relative;
+  }
+  .eis-item:hover { background: rgba(17, 22, 26, 0.045); }
+  .eis-item.is-dragging { opacity: 0.4; }
+
+  .eis-check {
+    appearance: none; -webkit-appearance: none;
+    width: 15px; height: 15px; margin: 2px 0 0; flex: none;
+    border: 1.5px solid var(--muted); border-radius: 50%;
+    cursor: pointer; background: transparent;
+  }
+  .eis-check:checked { background: var(--accent); border-color: var(--accent); }
+  .eis-check:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .eis-text { font-size: 14px; line-height: 1.4; flex: 1; word-break: break-word; }
+  .eis-item.is-done .eis-text { color: var(--muted); text-decoration: line-through; }
+
+  .eis-acts { display: flex; gap: 1px; opacity: 0; flex: none; }
+  .eis-item:hover .eis-acts, .eis-item:focus-within .eis-acts { opacity: 1; }
+  .eis-iconbtn {
+    font: inherit; font-size: 13px; line-height: 1;
+    border: 0; background: transparent; color: var(--muted);
+    padding: 3px 5px; cursor: pointer; border-radius: 2px;
+  }
+  .eis-iconbtn:hover { color: var(--ink); background: rgba(17, 22, 26, 0.07); }
+  .eis-iconbtn.is-del:hover { color: var(--danger); }
+  .eis-iconbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; opacity: 1; }
+
+  .eis-menu {
+    position: absolute; right: 4px; top: 100%; z-index: 20;
+    background: #fff; border: 1px solid var(--rule); border-radius: 2px;
+    box-shadow: 0 6px 18px rgba(17, 22, 26, 0.14);
+    padding: 3px; min-width: 168px;
+  }
+  .eis-menu button {
+    display: block; width: 100%; text-align: left;
+    font: inherit; font-size: 13px; border: 0; background: transparent;
+    padding: 7px 10px; cursor: pointer; border-radius: 1px; color: var(--ink);
+  }
+  .eis-menu button:hover { background: var(--accent-soft); }
+  .eis-menu button[disabled] { color: var(--muted); cursor: default; background: transparent; }
+  .eis-menu button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  .eis-empty { font-size: 13px; color: var(--muted); font-style: italic; padding: 4px 7px; }
+
+  .eis-foot {
+    margin-top: 22px; display: flex; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted);
+  }
+  .eis-foot-acts { display: flex; gap: 18px; flex-wrap: wrap; }
+  .eis-foot button {
+    font: inherit; font-size: 12px; border: 0; background: transparent;
+    color: var(--muted); cursor: pointer; text-decoration: underline; padding: 0;
+  }
+  .eis-foot button:hover { color: var(--ink); }
+  .eis-foot button.is-warn:hover { color: var(--danger); }
+  .eis-foot button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .eis-where {
+    margin: 12px 0 0; font-size: 12px; line-height: 1.5;
+    color: var(--muted); max-width: 66ch;
+  }
+
+  @media (max-width: 720px) {
+    .eis { padding: 20px 14px 28px; }
+    .eis-title { font-size: 32px; }
+    .eis-plane { grid-template-columns: 1fr; }
+    .eis-yaxis { display: none; }
+    .eis-grid { grid-template-columns: 1fr; }
+    .eis-xlabel { display: none; }
+    .eis-quad { min-height: 0; }
+    .eis-acts { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="eis">
+  <div class="eis-wrap">
+    <div class="eis-top">
+      <div>
+        <h1 class="eis-title">Eisenhower</h1>
+        <p class="eis-sub" id="eis-sub">Loading your items…</p>
+      </div>
+      <div class="eis-tabs" role="tablist" aria-label="List">
+        <button class="eis-tab" role="tab" id="tab-do" aria-selected="true" data-tab="do">Things to do</button>
+        <button class="eis-tab" role="tab" id="tab-buy" aria-selected="false" data-tab="buy">Things to buy</button>
+      </div>
+    </div>
+
+    <div class="eis-add">
+      <input class="eis-input" id="eis-input" type="text" autocomplete="off" placeholder="Add an item">
+      <div class="eis-flags">
+        <button class="eis-flag" id="flag-urgent" type="button" aria-pressed="false">Urgent</button>
+        <button class="eis-flag" id="flag-important" type="button" aria-pressed="false">Important</button>
+      </div>
+      <button class="eis-submit" id="eis-submit" type="button">Add</button>
+    </div>
+
+    <div class="eis-plane">
+      <div class="eis-yaxis">
+        <div class="eis-ylabel">Important</div>
+        <div class="eis-ylabel is-off">Not important</div>
+      </div>
+      <div>
+        <div class="eis-grid">
+          <div class="eis-xlabel">Urgent</div>
+          <div class="eis-xlabel is-off">Not urgent</div>
+        </div>
+        <div class="eis-grid" id="eis-grid"></div>
+      </div>
+    </div>
+
+    <div class="eis-foot">
+      <span id="eis-status"></span>
+      <span class="eis-foot-acts">
+        <button type="button" id="eis-export">Save a backup file</button>
+        <button type="button" id="eis-import">Load a backup file</button>
+        <button type="button" id="eis-clear" class="is-warn">Remove finished items</button>
+      </span>
+      <input type="file" id="eis-file" accept="application/json,.json" hidden>
+    </div>
+    <p class="eis-where" id="eis-where"></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'eisenhower:v1';
+
+  var QUADS = [
+    { id: 'q1', urgent: true,  important: true  },
+    { id: 'q2', urgent: false, important: true  },
+    { id: 'q3', urgent: true,  important: false },
+    { id: 'q4', urgent: false, important: false }
+  ];
+
+  var TABS = {
+    do: {
+      noun: 'task',
+      names: { q1: 'Do now', q2: 'Schedule it', q3: 'Delegate or trim', q4: 'Let it go' },
+      empty: {
+        q1: 'Nothing on fire.',
+        q2: 'The quadrant that pays off. Put something here.',
+        q3: 'Nothing pulling at you.',
+        q4: 'Empty, as it should be.'
+      },
+      placeholder: 'Add a task'
+    },
+    buy: {
+      noun: 'item',
+      names: { q1: 'Buy now', q2: 'Save toward it', q3: 'Buy the cheap one', q4: 'Skip it' },
+      empty: {
+        q1: 'Nothing you actually need today.',
+        q2: 'Bigger things worth waiting for.',
+        q3: 'Small stuff you just need to work.',
+        q4: 'Where the money leaks. Keep it empty.'
+      },
+      placeholder: 'Add something you want to buy'
+    }
+  };
+
+  var state = { do: [], buy: [] };
+  var tab = 'do';
+  var pending = { urgent: false, important: false };
+  var openMenu = null;
+  var saveTimer = null;
+
+  var $grid = document.getElementById('eis-grid');
+  var $input = document.getElementById('eis-input');
+  var $sub = document.getElementById('eis-sub');
+  var $status = document.getElementById('eis-status');
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function quadOf(item) {
+    if (item.urgent && item.important) return 'q1';
+    if (!item.urgent && item.important) return 'q2';
+    if (item.urgent && !item.important) return 'q3';
+    return 'q4';
+  }
+
+  function find(id) {
+    var list = state[tab];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === id) return list[i];
+    }
+    return null;
+  }
+
+  /* ---------- storage ----------
+     Three places your items can live, tried in this order:
+       1. window.storage  - exists only inside the Claude artifact sandbox
+       2. localStorage    - works when this file is served over http(s),
+                            and in most browsers when opened straight off disk
+       3. memory          - last resort; a backup file is the only way out
+     Whichever is in use is named under the footer, so it is never a guess. */
+
+  var backend = 'memory';
+  var $where = document.getElementById('eis-where');
+  var $file = document.getElementById('eis-file');
+
+  function localWorks() {
+    try {
+      var probe = '__eis_probe__';
+      window.localStorage.setItem(probe, '1');
+      window.localStorage.removeItem(probe);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function apply(raw) {
+    try {
+      var parsed = JSON.parse(raw);
+      if (!parsed || (!Array.isArray(parsed.do) && !Array.isArray(parsed.buy))) return false;
+      state.do = Array.isArray(parsed.do) ? parsed.do : [];
+      state.buy = Array.isArray(parsed.buy) ? parsed.buy : [];
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function load() {
+    if (window.storage && typeof window.storage.get === 'function') {
+      backend = 'claude';
+      window.storage.get(KEY).then(function (res) {
+        if (res && res.value) apply(res.value);
+        ready();
+      }).catch(function () {
+        ready();
+      });
+      return;
+    }
+    if (localWorks()) {
+      backend = 'local';
+      var raw = window.localStorage.getItem(KEY);
+      if (raw) apply(raw);
+    }
+    ready();
+  }
+
+  function ready() {
+    $sub.textContent = 'Two questions per item: is it urgent, and does it matter.';
+    describe();
+    render();
+  }
+
+  function describe() {
+    if (backend === 'claude') {
+      $where.textContent = 'Your items are saved inside Claude and will be here next time you open this artifact. '
+        + 'If you download the file to use on your own, save a backup first and load it back in.';
+    } else if (backend === 'local') {
+      $where.textContent = 'Your items are saved in this browser, on this machine. They survive a refresh. '
+        + 'Clearing browsing data, or switching to another browser or device, will not carry them over, so keep a backup file.';
+    } else {
+      $where.textContent = 'This browser will not let a file opened from disk save data, so your items will be gone on refresh. '
+        + 'Either save a backup file before you close the tab, or serve the file from a local web server and it will save normally.';
+    }
+  }
+
+  function persist() {
+    var payload = JSON.stringify(state);
+    if (backend === 'claude') {
+      window.storage.set(KEY, payload).catch(function () {
+        backend = localWorks() ? 'local' : 'memory';
+        if (backend === 'local') window.localStorage.setItem(KEY, payload);
+        describe();
+      });
+    } else if (backend === 'local') {
+      try {
+        window.localStorage.setItem(KEY, payload);
+      } catch (e) {
+        backend = 'memory';
+        describe();
+      }
+    }
+  }
+
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(persist, 250);
+  }
+
+  /* ---------- backup files ---------- */
+
+  function exportBackup() {
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'eisenhower-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    $status.textContent = 'Backup saved to your downloads.';
+  }
+
+  $file.addEventListener('change', function () {
+    var f = $file.files && $file.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      if (apply(reader.result)) {
+        persist();
+        render();
+        $status.textContent = 'Backup loaded.';
+      } else {
+        $status.textContent = 'That file is not a backup from this app.';
+      }
+      $file.value = '';
+    };
+    reader.readAsText(f);
+  });
+
+  document.getElementById('eis-export').addEventListener('click', exportBackup);
+  document.getElementById('eis-import').addEventListener('click', function () { $file.click(); });
+
+  /* ---------- actions ---------- */
+
+  function add() {
+    var text = $input.value.trim();
+    if (!text) { $input.focus(); return; }
+    state[tab].push({
+      id: uid(), text: text,
+      urgent: pending.urgent, important: pending.important,
+      done: false
+    });
+    $input.value = '';
+    $input.focus();
+    save();
+    render();
+  }
+
+  function move(id, urgent, important) {
+    var item = find(id);
+    if (!item) return;
+    item.urgent = urgent;
+    item.important = important;
+    save();
+    render();
+  }
+
+  function toggle(id) {
+    var item = find(id);
+    if (!item) return;
+    item.done = !item.done;
+    save();
+    render();
+  }
+
+  function remove(id) {
+    state[tab] = state[tab].filter(function (i) { return i.id !== id; });
+    save();
+    render();
+  }
+
+  /* ---------- render ---------- */
+
+  function render() {
+    var cfg = TABS[tab];
+    $input.placeholder = cfg.placeholder;
+    $grid.innerHTML = '';
+    openMenu = null;
+
+    var total = 0, left = 0;
+
+    QUADS.forEach(function (q) {
+      var items = state[tab].filter(function (i) { return quadOf(i) === q.id; });
+      items.sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
+      var open = items.filter(function (i) { return !i.done; }).length;
+      total += items.length;
+      left += open;
+
+      var cell = document.createElement('section');
+      cell.className = 'eis-quad' + (q.urgent ? ' is-urgent' : '') + (q.important ? ' is-important' : '');
+      cell.setAttribute('aria-label', cfg.names[q.id]);
+
+      cell.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        cell.classList.add('is-over');
+      });
+      cell.addEventListener('dragleave', function () { cell.classList.remove('is-over'); });
+      cell.addEventListener('drop', function (e) {
+        e.preventDefault();
+        cell.classList.remove('is-over');
+        var id = e.dataTransfer.getData('text/plain');
+        if (id) move(id, q.urgent, q.important);
+      });
+
+      var head = document.createElement('div');
+      head.className = 'eis-quad-head';
+      var name = document.createElement('h2');
+      name.className = 'eis-quad-name';
+      name.textContent = cfg.names[q.id];
+      var count = document.createElement('span');
+      count.className = 'eis-quad-count';
+      count.textContent = open ? open + ' open' : '';
+      head.appendChild(name);
+      head.appendChild(count);
+      cell.appendChild(head);
+
+      var list = document.createElement('ul');
+      list.className = 'eis-list';
+
+      if (!items.length) {
+        var empty = document.createElement('li');
+        empty.className = 'eis-empty';
+        empty.textContent = cfg.empty[q.id];
+        list.appendChild(empty);
+      } else {
+        items.forEach(function (item) { list.appendChild(row(item, q)); });
+      }
+
+      cell.appendChild(list);
+      $grid.appendChild(cell);
+    });
+
+    if (!total) {
+      $status.textContent = '';
+    } else {
+      $status.textContent = left + ' open of ' + total + ' ' + (total === 1 ? cfg.noun : cfg.noun + 's');
+    }
+  }
+
+  function row(item, q) {
+    var cfg = TABS[tab];
+    var li = document.createElement('li');
+    li.className = 'eis-item' + (item.done ? ' is-done' : '');
+    li.draggable = true;
+
+    li.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', item.id);
+      e.dataTransfer.effectAllowed = 'move';
+      li.classList.add('is-dragging');
+    });
+    li.addEventListener('dragend', function () { li.classList.remove('is-dragging'); });
+
+    var check = document.createElement('input');
+    check.type = 'checkbox';
+    check.className = 'eis-check';
+    check.checked = item.done;
+    check.setAttribute('aria-label', 'Mark "' + item.text + '" finished');
+    check.addEventListener('change', function () { toggle(item.id); });
+
+    var text = document.createElement('span');
+    text.className = 'eis-text';
+    text.textContent = item.text;
+
+    var acts = document.createElement('span');
+    acts.className = 'eis-acts';
+
+    var moveBtn = document.createElement('button');
+    moveBtn.type = 'button';
+    moveBtn.className = 'eis-iconbtn';
+    moveBtn.textContent = 'Move';
+    moveBtn.setAttribute('aria-label', 'Move "' + item.text + '" to another quadrant');
+    moveBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      showMenu(li, item, q);
+    });
+
+    var del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'eis-iconbtn is-del';
+    del.innerHTML = '&times;';
+    del.setAttribute('aria-label', 'Delete "' + item.text + '"');
+    del.addEventListener('click', function () { remove(item.id); });
+
+    acts.appendChild(moveBtn);
+    acts.appendChild(del);
+
+    li.appendChild(check);
+    li.appendChild(text);
+    li.appendChild(acts);
+    return li;
+  }
+
+  function showMenu(li, item, current) {
+    if (openMenu) { openMenu.remove(); openMenu = null; }
+    var cfg = TABS[tab];
+    var menu = document.createElement('div');
+    menu.className = 'eis-menu';
+
+    QUADS.forEach(function (q) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = cfg.names[q.id];
+      if (q.id === current.id) {
+        b.disabled = true;
+      } else {
+        b.addEventListener('click', function () { move(item.id, q.urgent, q.important); });
+      }
+      menu.appendChild(b);
+    });
+
+    li.appendChild(menu);
+    openMenu = menu;
+    var first = menu.querySelector('button:not([disabled])');
+    if (first) first.focus();
+  }
+
+  document.addEventListener('click', function (e) {
+    if (openMenu && !openMenu.contains(e.target)) { openMenu.remove(); openMenu = null; }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && openMenu) { openMenu.remove(); openMenu = null; }
+  });
+
+  /* ---------- controls ---------- */
+
+  Array.prototype.forEach.call(document.querySelectorAll('.eis-tab'), function (btn) {
+    btn.addEventListener('click', function () {
+      tab = btn.dataset.tab;
+      Array.prototype.forEach.call(document.querySelectorAll('.eis-tab'), function (b) {
+        b.setAttribute('aria-selected', String(b === btn));
+      });
+      render();
+    });
+  });
+
+  ['urgent', 'important'].forEach(function (k) {
+    var btn = document.getElementById('flag-' + k);
+    btn.addEventListener('click', function () {
+      pending[k] = !pending[k];
+      btn.setAttribute('aria-pressed', String(pending[k]));
+    });
+  });
+
+  document.getElementById('eis-submit').addEventListener('click', add);
+  $input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); add(); }
+  });
+
+  document.getElementById('eis-clear').addEventListener('click', function () {
+    state[tab] = state[tab].filter(function (i) { return !i.done; });
+    save();
+    render();
+  });
+
+  load();
+})();
+</script>

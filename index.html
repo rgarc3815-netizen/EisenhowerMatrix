@@ -4,33 +4,33 @@
 
 <style>
   :root {
-    --bg: #DCE2E4;
-    --plane: #F4F6F6;
-    --ink: #11161A;
-    --muted: #6C777C;
-    --rule: #C2CACD;
-    --accent: #14536E;
-    --accent-soft: rgba(20, 83, 110, 0.065);
-    --danger: #8C3A2B;
+    --bg: #E9F0E5;
+    --plane: #F8FBF6;
+    --ink: #1E2A21;
+    --muted: #61705F;
+    --rule: #CFDAC9;
+    --accent: #2F6248;
+    --accent-soft: rgba(47, 98, 72, 0.07);
+    --danger: #A04A34;
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
 
   .eis {
     font-family: Inter, system-ui, sans-serif;
     color: var(--ink);
     background: var(--bg);
-    padding: 28px 24px 36px;
+    padding: 26px 22px 34px;
     min-height: 100%;
     -webkit-font-smoothing: antialiased;
   }
+  .eis-wrap { max-width: 1180px; margin: 0 auto; }
 
-  .eis-wrap { max-width: 1040px; margin: 0 auto; }
-
-  /* ---- header ---- */
+  /* ---------- header ---------- */
   .eis-top {
     display: flex; align-items: flex-end; justify-content: space-between;
-    gap: 20px; flex-wrap: wrap; margin-bottom: 22px;
+    gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
   }
   .eis-title {
     font-family: 'Instrument Serif', Georgia, serif;
@@ -38,20 +38,19 @@
   }
   .eis-sub { font-size: 13px; color: var(--muted); margin: 7px 0 0; }
 
-  .eis-tabs { display: flex; gap: 2px; background: var(--rule); padding: 2px; border-radius: 2px; }
-  .eis-tab {
+  .eis-seg { display: flex; gap: 2px; background: var(--rule); padding: 2px; border-radius: 2px; }
+  .eis-seg button {
     font: inherit; font-size: 13.5px; font-weight: 500;
     border: 0; background: transparent; color: var(--muted);
-    padding: 9px 18px; cursor: pointer; border-radius: 1px;
+    padding: 9px 18px; cursor: pointer; border-radius: 1px; white-space: nowrap;
   }
-  .eis-tab[aria-selected="true"] { background: var(--plane); color: var(--ink); }
-  .eis-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .eis-seg button[aria-selected="true"] { background: var(--plane); color: var(--ink); }
+  .eis-seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-  /* ---- add bar ---- */
-  .eis-add {
-    display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap;
-    margin-bottom: 26px;
-  }
+  .eis-tabs { margin-bottom: 14px; display: inline-flex; }
+
+  /* ---------- add bar ---------- */
+  .eis-add { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; margin-bottom: 24px; }
   .eis-input {
     flex: 1 1 320px; min-width: 0;
     font: inherit; font-size: 15px; color: var(--ink);
@@ -77,9 +76,8 @@
   }
   .eis-submit:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  /* ---- the plane ---- */
+  /* ---------- the plane ---------- */
   .eis-plane { display: grid; grid-template-columns: 34px 1fr; gap: 10px; }
-
   .eis-yaxis { display: grid; grid-template-rows: 1fr 1fr; gap: 10px; padding-top: 30px; }
   .eis-ylabel {
     display: flex; align-items: center; justify-content: center;
@@ -88,9 +86,7 @@
     font-size: 19px; color: var(--accent); white-space: nowrap;
   }
   .eis-ylabel.is-off { color: var(--muted); font-style: italic; }
-
   .eis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
   .eis-xlabel {
     font-family: 'Instrument Serif', Georgia, serif;
     font-size: 19px; color: var(--accent); padding-bottom: 8px;
@@ -98,62 +94,63 @@
   .eis-xlabel.is-off { color: var(--muted); font-style: italic; }
 
   .eis-quad {
-    background: var(--plane); border-radius: 2px;
-    border-top: 1px solid var(--rule);
-    padding: 16px 16px 12px; min-height: 190px;
-    display: flex; flex-direction: column;
+    background: var(--plane); border-radius: 2px; border-top: 1px solid var(--rule);
+    padding: 16px 16px 12px; min-height: 190px; display: flex; flex-direction: column;
   }
   .eis-quad.is-urgent { background: linear-gradient(var(--accent-soft), var(--accent-soft)), var(--plane); }
   .eis-quad.is-important { border-top: 3px solid var(--accent); padding-top: 14px; }
   .eis-quad.is-over { box-shadow: inset 0 0 0 2px var(--accent); }
 
-  .eis-quad-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: 10px; margin-bottom: 12px;
-  }
-  .eis-quad-name {
-    font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; line-height: 1;
-  }
+  .eis-quad-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .eis-quad-name { font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; line-height: 1; }
   .eis-quad-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
   .eis-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; flex: 1; }
-
   .eis-item {
     display: flex; align-items: flex-start; gap: 9px;
-    padding: 7px 6px 7px 7px; border-radius: 2px;
-    background: transparent; cursor: grab; position: relative;
+    padding: 7px 6px 7px 7px; border-radius: 2px; background: transparent;
+    cursor: grab; position: relative;
   }
-  .eis-item:hover { background: rgba(17, 22, 26, 0.045); }
+  .eis-item:hover { background: rgba(30, 42, 33, 0.045); }
   .eis-item.is-dragging { opacity: 0.4; }
 
   .eis-check {
     appearance: none; -webkit-appearance: none;
     width: 15px; height: 15px; margin: 2px 0 0; flex: none;
-    border: 1.5px solid var(--muted); border-radius: 50%;
-    cursor: pointer; background: transparent;
+    border: 1.5px solid var(--muted); border-radius: 50%; cursor: pointer; background: transparent;
   }
   .eis-check:checked { background: var(--accent); border-color: var(--accent); }
   .eis-check:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  .eis-text { font-size: 14px; line-height: 1.4; flex: 1; word-break: break-word; }
+  .eis-body { flex: 1; min-width: 0; }
+  .eis-text { font-size: 14px; line-height: 1.4; word-break: break-word; }
   .eis-item.is-done .eis-text { color: var(--muted); text-decoration: line-through; }
+
+  .eis-when {
+    display: inline-block; margin-top: 3px;
+    font: inherit; font-size: 11px; line-height: 1.4;
+    border: 0; background: transparent; padding: 0; cursor: pointer;
+    color: var(--accent); border-bottom: 1px dotted currentColor;
+  }
+  .eis-when:hover { color: var(--ink); }
+  .eis-when:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .eis-acts { display: flex; gap: 1px; opacity: 0; flex: none; }
   .eis-item:hover .eis-acts, .eis-item:focus-within .eis-acts { opacity: 1; }
   .eis-iconbtn {
-    font: inherit; font-size: 13px; line-height: 1;
+    font: inherit; font-size: 12px; line-height: 1;
     border: 0; background: transparent; color: var(--muted);
-    padding: 3px 5px; cursor: pointer; border-radius: 2px;
+    padding: 3px 5px; cursor: pointer; border-radius: 2px; white-space: nowrap;
   }
-  .eis-iconbtn:hover { color: var(--ink); background: rgba(17, 22, 26, 0.07); }
+  .eis-iconbtn:hover { color: var(--ink); background: rgba(30, 42, 33, 0.07); }
   .eis-iconbtn.is-del:hover { color: var(--danger); }
   .eis-iconbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; opacity: 1; }
 
   .eis-menu {
-    position: absolute; right: 4px; top: 100%; z-index: 20;
+    position: absolute; right: 4px; top: 100%; z-index: 30;
     background: #fff; border: 1px solid var(--rule); border-radius: 2px;
-    box-shadow: 0 6px 18px rgba(17, 22, 26, 0.14);
-    padding: 3px; min-width: 168px;
+    box-shadow: 0 6px 18px rgba(30, 42, 33, 0.16);
+    padding: 3px; min-width: 214px; max-height: 280px; overflow-y: auto;
   }
   .eis-menu button {
     display: block; width: 100%; text-align: left;
@@ -163,9 +160,222 @@
   .eis-menu button:hover { background: var(--accent-soft); }
   .eis-menu button[disabled] { color: var(--muted); cursor: default; background: transparent; }
   .eis-menu button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .eis-menu-head {
+    font-size: 11px; color: var(--muted); padding: 7px 10px 4px;
+    border-top: 1px solid var(--rule); margin-top: 3px;
+  }
+  .eis-menu-head:first-child { border-top: 0; margin-top: 0; }
 
   .eis-empty { font-size: 13px; color: var(--muted); font-style: italic; padding: 4px 7px; }
 
+  /* ---------- calendar ---------- */
+  .cal-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .cal-nav { display: flex; align-items: center; gap: 10px; }
+  .cal-range {
+    font-family: 'Instrument Serif', Georgia, serif; font-size: 22px;
+    min-width: 200px;
+  }
+  .cal-arrow {
+    font: inherit; font-size: 18px; line-height: 1;
+    border: 1px solid var(--rule); background: var(--plane); color: var(--ink);
+    width: 30px; height: 30px; border-radius: 2px; cursor: pointer;
+  }
+  .cal-arrow:hover { background: #fff; }
+  .cal-arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .cal-btn {
+    font: inherit; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--rule); background: var(--plane); color: var(--ink);
+    padding: 8px 14px; border-radius: 2px; cursor: pointer;
+  }
+  .cal-btn:hover { background: #fff; }
+  .cal-btn.is-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .cal-btn.is-primary:hover { background: #16241A; }
+  .cal-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .cal-bar-right { display: flex; gap: 8px; }
+
+  .cal-layout { display: grid; grid-template-columns: 234px 1fr; gap: 14px; align-items: start; }
+
+  .cal-rail { background: var(--plane); border-radius: 2px; padding: 14px; }
+  .cal-rail-title {
+    font-family: 'Instrument Serif', Georgia, serif; font-size: 19px;
+    margin: 12px 0 8px;
+  }
+  .cal-rail.is-over { box-shadow: inset 0 0 0 2px var(--accent); }
+  .cal-rail-group {
+    font-size: 11px; color: var(--muted); text-transform: none;
+    margin: 12px 0 4px; padding-bottom: 3px; border-bottom: 1px solid var(--rule);
+  }
+  .cal-rail-group:first-of-type { margin-top: 0; }
+  .cal-pill {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 13px; line-height: 1.35; padding: 6px 7px;
+    border-radius: 2px; cursor: grab; background: rgba(30, 42, 33, 0.04);
+    margin-bottom: 3px; word-break: break-word;
+  }
+  .cal-pill:hover { background: rgba(30, 42, 33, 0.09); }
+  .cal-pill.is-dragging { opacity: 0.4; }
+
+  .cal-main { background: var(--plane); border-radius: 2px; overflow-x: auto; }
+  .cal-inner { min-width: 680px; }
+  .cal-head {
+    display: grid; grid-template-columns: 54px repeat(7, 1fr);
+    border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: var(--plane); z-index: 2;
+  }
+  .cal-head > div { padding: 9px 4px; font-size: 12px; text-align: center; color: var(--muted); }
+  .cal-head > div.is-today { color: var(--accent); font-weight: 600; }
+  .cal-head b { display: block; font-size: 15px; font-weight: 500; color: var(--ink); }
+  .cal-head .is-today b { color: var(--accent); }
+
+  .cal-scroll { max-height: 580px; overflow-y: auto; }
+  .cal-body { display: grid; grid-template-columns: 54px repeat(7, 1fr); }
+  .cal-axis { position: relative; }
+  .cal-axis span {
+    position: absolute; right: 7px; font-size: 10.5px; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .cal-col {
+    position: relative; border-left: 1px solid var(--rule); touch-action: pan-y;
+    background-image:
+      repeating-linear-gradient(to bottom, rgba(17,22,26,0.10) 0 1px, transparent 1px 52px),
+      repeating-linear-gradient(to bottom, rgba(17,22,26,0.035) 0 1px, transparent 1px 26px);
+  }
+  .cal-col.is-weekend { background-color: rgba(30, 42, 33, 0.022); }
+  .cal-col.is-over { background-color: var(--accent-soft); }
+
+  .cal-now { position: absolute; left: 0; right: 0; height: 1px; background: var(--danger); z-index: 3; }
+  .cal-now::before {
+    content: ''; position: absolute; left: -3px; top: -2.5px;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--danger);
+  }
+
+  .cal-block {
+    position: absolute; left: 2px; right: 3px; border-radius: 2px;
+    padding: 3px 5px; color: #fff; cursor: pointer; overflow: hidden; z-index: 1;
+  }
+  .cal-block:hover { filter: brightness(1.12); }
+  .cal-block.is-over { box-shadow: inset 0 0 0 2px #fff; }
+  .cal-block-time {
+    font-size: 10px; line-height: 1.3; opacity: 0.88;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cal-task {
+    font-size: 11px; line-height: 1.35; margin-top: 2px;
+    word-break: break-word; cursor: grab;
+  }
+  .cal-task.is-done { opacity: 0.6; text-decoration: line-through; }
+  .cal-task.is-buy::before {
+    content: 'buy'; font-size: 8.5px; opacity: 0.75;
+    border: 1px solid currentColor; border-radius: 2px;
+    padding: 0 2px; margin-right: 4px; vertical-align: 1px;
+  }
+
+  .cal-ghost {
+    position: absolute; left: 2px; right: 3px; z-index: 4;
+    border: 1px dashed var(--accent); background: var(--accent-soft);
+    border-radius: 2px; padding: 3px 5px; font-size: 10px; color: var(--accent);
+    pointer-events: none; overflow: hidden;
+  }
+  .cal-hint { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+
+  /* ---------- modal ---------- */
+  .eis-backdrop {
+    position: fixed; inset: 0; background: rgba(30, 42, 33, 0.42);
+    display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 100;
+  }
+  .eis-modal {
+    background: #fff; border-radius: 3px; width: 100%; max-width: 420px;
+    max-height: 88vh; overflow-y: auto; padding: 20px;
+    box-shadow: 0 18px 50px rgba(30, 42, 33, 0.3);
+  }
+  .eis-modal h2 {
+    font-family: 'Instrument Serif', Georgia, serif; font-size: 25px;
+    margin: 0 0 2px; font-weight: 400;
+  }
+  .eis-modal-sub { font-size: 12px; color: var(--muted); margin: 0 0 16px; }
+  .eis-modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .eis-x {
+    font: inherit; font-size: 20px; line-height: 1; border: 0; background: transparent;
+    color: var(--muted); cursor: pointer; padding: 2px 6px; border-radius: 2px;
+  }
+  .eis-x:hover { color: var(--ink); background: rgba(30, 42, 33, 0.07); }
+  .eis-field { margin-bottom: 14px; }
+  .eis-label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .eis-row { display: flex; gap: 8px; }
+  .eis-row > .eis-field { flex: 1; margin-bottom: 14px; }
+  .eis-select {
+    width: 100%; font: inherit; font-size: 13px; color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 2px; padding: 8px 9px; background: #fff;
+  }
+  .eis-select:focus-visible { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .eis-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .eis-chip {
+    font: inherit; font-size: 12px; line-height: 1;
+    border: 1px solid var(--rule); background: #fff; color: var(--muted);
+    padding: 7px 11px; border-radius: 13px; cursor: pointer;
+  }
+  .eis-chip i {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    margin-right: 6px; vertical-align: 0;
+  }
+  .eis-chip[aria-pressed="true"] { color: #fff; border-color: transparent; }
+  .eis-chip[aria-pressed="true"] i { background: rgba(255, 255, 255, 0.85) !important; }
+  .eis-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .eis-link {
+    display: block; margin-top: 10px;
+    font: inherit; font-size: 12px; border: 0; background: transparent;
+    color: var(--accent); cursor: pointer; text-decoration: underline; padding: 0;
+  }
+  .eis-link:hover { color: var(--ink); }
+  .eis-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .tag-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .tag-dot {
+    width: 22px; height: 22px; border-radius: 50%; border: 0; cursor: pointer; flex: none;
+    box-shadow: inset 0 0 0 1px rgba(30, 42, 33, 0.18);
+  }
+  .tag-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tag-name {
+    flex: 1; min-width: 0; font: inherit; font-size: 13px; color: var(--ink);
+    border: 1px solid transparent; border-radius: 2px; padding: 7px 8px; background: transparent;
+  }
+  .tag-name:hover { border-color: var(--rule); }
+  .tag-name:focus {
+    border-color: transparent; outline: 2px solid var(--accent);
+    outline-offset: -1px; background: #fff;
+  }
+  .tag-palette { display: flex; flex-wrap: wrap; gap: 7px; padding: 2px 0 10px 30px; }
+  .tag-swatch {
+    width: 22px; height: 22px; border-radius: 50%; border: 0; cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(30, 42, 33, 0.18);
+  }
+  .tag-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ink); }
+  .tag-swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .tag-empty { font-size: 13px; color: var(--muted); font-style: italic; margin: 0 0 10px; }
+
+  .eis-tasks { max-height: 210px; overflow-y: auto; border: 1px solid var(--rule); border-radius: 2px; padding: 4px; }
+  .eis-task-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 7px; font-size: 13px; line-height: 1.35; border-radius: 2px; cursor: pointer;
+  }
+  .eis-task-row:hover { background: var(--accent-soft); }
+  .eis-task-row input { margin: 2px 0 0; flex: none; accent-color: var(--accent); }
+  .eis-tag {
+    font-size: 9px; color: var(--muted); border: 1px solid var(--rule);
+    border-radius: 2px; padding: 0 3px; margin-left: 5px; vertical-align: 1px;
+  }
+  .eis-modal-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
+  .eis-danger {
+    font: inherit; font-size: 12.5px; border: 0; background: transparent;
+    color: var(--muted); cursor: pointer; text-decoration: underline; padding: 0;
+  }
+  .eis-danger:hover { color: var(--danger); }
+  .eis-warn { font-size: 12px; color: var(--danger); margin: 0 0 12px; min-height: 0; }
+
+  /* ---------- footer ---------- */
   .eis-foot {
     margin-top: 22px; display: flex; justify-content: space-between;
     gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted);
@@ -178,64 +388,111 @@
   .eis-foot button:hover { color: var(--ink); }
   .eis-foot button.is-warn:hover { color: var(--danger); }
   .eis-foot button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .eis-where {
-    margin: 12px 0 0; font-size: 12px; line-height: 1.5;
-    color: var(--muted); max-width: 66ch;
-  }
+  .eis-where { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: var(--muted); max-width: 66ch; }
 
+  @media (max-width: 860px) {
+    .cal-layout { grid-template-columns: 1fr; }
+  }
   @media (max-width: 720px) {
     .eis { padding: 20px 14px 28px; }
     .eis-title { font-size: 32px; }
     .eis-plane { grid-template-columns: 1fr; }
-    .eis-yaxis { display: none; }
+    .eis-yaxis, .eis-xlabel { display: none; }
     .eis-grid { grid-template-columns: 1fr; }
-    .eis-xlabel { display: none; }
     .eis-quad { min-height: 0; }
     .eis-acts { opacity: 1; }
+    .cal-range { font-size: 18px; min-width: 0; }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; animation: none !important; }
-  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
 <div class="eis">
   <div class="eis-wrap">
-    <div class="eis-top">
+
+    <header class="eis-top">
       <div>
         <h1 class="eis-title">Eisenhower</h1>
-        <p class="eis-sub" id="eis-sub">Loading your items…</p>
+        <p class="eis-sub" id="eis-sub">Loading…</p>
       </div>
-      <div class="eis-tabs" role="tablist" aria-label="List">
-        <button class="eis-tab" role="tab" id="tab-do" aria-selected="true" data-tab="do">Things to do</button>
-        <button class="eis-tab" role="tab" id="tab-buy" aria-selected="false" data-tab="buy">Things to buy</button>
+      <div class="eis-seg" role="tablist" aria-label="View">
+        <button role="tab" data-view="matrix" aria-selected="true">Matrix</button>
+        <button role="tab" data-view="calendar" aria-selected="false">Calendar</button>
       </div>
-    </div>
+    </header>
 
-    <div class="eis-add">
-      <input class="eis-input" id="eis-input" type="text" autocomplete="off" placeholder="Add an item">
-      <div class="eis-flags">
-        <button class="eis-flag" id="flag-urgent" type="button" aria-pressed="false">Urgent</button>
-        <button class="eis-flag" id="flag-important" type="button" aria-pressed="false">Important</button>
+    <!-- ===== MATRIX ===== -->
+    <section id="view-matrix">
+      <div class="eis-seg eis-tabs" role="tablist" aria-label="List">
+        <button role="tab" class="eis-tab" data-tab="do" aria-selected="true">Things to do</button>
+        <button role="tab" class="eis-tab" data-tab="buy" aria-selected="false">Things to buy</button>
       </div>
-      <button class="eis-submit" id="eis-submit" type="button">Add</button>
-    </div>
 
-    <div class="eis-plane">
-      <div class="eis-yaxis">
-        <div class="eis-ylabel">Important</div>
-        <div class="eis-ylabel is-off">Not important</div>
-      </div>
-      <div>
-        <div class="eis-grid">
-          <div class="eis-xlabel">Urgent</div>
-          <div class="eis-xlabel is-off">Not urgent</div>
+      <div class="eis-add">
+        <input class="eis-input" id="eis-input" type="text" autocomplete="off" placeholder="Add an item">
+        <div class="eis-flags">
+          <button class="eis-flag" id="flag-urgent" type="button" aria-pressed="false">Urgent</button>
+          <button class="eis-flag" id="flag-important" type="button" aria-pressed="false">Important</button>
         </div>
-        <div class="eis-grid" id="eis-grid"></div>
+        <button class="eis-submit" id="eis-submit" type="button">Add</button>
       </div>
-    </div>
 
-    <div class="eis-foot">
+      <div class="eis-plane">
+        <div class="eis-yaxis">
+          <div class="eis-ylabel">Important</div>
+          <div class="eis-ylabel is-off">Not important</div>
+        </div>
+        <div>
+          <div class="eis-grid">
+            <div class="eis-xlabel">Urgent</div>
+            <div class="eis-xlabel is-off">Not urgent</div>
+          </div>
+          <div class="eis-grid" id="eis-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CALENDAR ===== -->
+    <section id="view-calendar" hidden>
+      <div class="cal-bar">
+        <div class="cal-nav">
+          <button class="cal-arrow" id="cal-prev" aria-label="Previous week">&lsaquo;</button>
+          <button class="cal-arrow" id="cal-next" aria-label="Next week">&rsaquo;</button>
+          <span class="cal-range" id="cal-range"></span>
+        </div>
+        <div class="cal-bar-right">
+          <button class="cal-btn" id="cal-tags">Tags</button>
+          <button class="cal-btn" id="cal-today">Today</button>
+          <button class="cal-btn is-primary" id="cal-add">New block</button>
+        </div>
+      </div>
+
+      <div class="cal-layout">
+        <aside class="cal-rail" id="cal-rail">
+          <div class="eis-seg" role="tablist" aria-label="List">
+            <button role="tab" class="eis-tab" data-tab="do" aria-selected="true">To do</button>
+            <button role="tab" class="eis-tab" data-tab="buy" aria-selected="false">To buy</button>
+          </div>
+          <p class="cal-rail-title">Unscheduled</p>
+          <div id="cal-rail-list"></div>
+        </aside>
+
+        <div>
+          <div class="cal-main">
+            <div class="cal-inner">
+              <div class="cal-head" id="cal-head"></div>
+              <div class="cal-scroll" id="cal-scroll">
+                <div class="cal-body">
+                  <div class="cal-axis" id="cal-axis"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="cal-hint">Drag down an empty column to make a block. Drag a task onto a block to schedule it, or back to the rail to unschedule. Click a block to edit it.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="eis-foot">
       <span id="eis-status"></span>
       <span class="eis-foot-acts">
         <button type="button" id="eis-export">Save a backup file</button>
@@ -243,14 +500,30 @@
         <button type="button" id="eis-clear" class="is-warn">Remove finished items</button>
       </span>
       <input type="file" id="eis-file" accept="application/json,.json" hidden>
-    </div>
+    </footer>
     <p class="eis-where" id="eis-where"></p>
+
   </div>
 </div>
 
+<div id="eis-modal-root"></div>
+
 <script>
 (function () {
+  'use strict';
+
   var KEY = 'eisenhower:v1';
+
+  var SLOT_MIN = 30;
+  var SLOTS_PER_DAY = 48;
+  var SLOT_H = 26;
+
+  var BLOCK_COLOR = '#2F6248';        // an untagged focus block
+  var TAG_COLORS = [
+    '#3E7A57', '#5E7A33', '#2F6B63', '#7A6A2A',
+    '#556B4F', '#4A6E8A', '#7A5240', '#8A4A44'
+  ];
+  var MAX_TAGS = 24;
 
   var QUADS = [
     { id: 'q1', urgent: true,  important: true  },
@@ -284,20 +557,95 @@
     }
   };
 
-  var state = { do: [], buy: [] };
+  var DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  /* ---------- state ---------- */
+
+  var state = { do: [], buy: [], blocks: [], tags: [] };
   var tab = 'do';
+  var view = 'matrix';
+  var weekStart = startOfWeek(new Date());
   var pending = { urgent: false, important: false };
   var openMenu = null;
   var saveTimer = null;
+  var dragItemId = null;
+  var creating = null;
 
   var $grid = document.getElementById('eis-grid');
   var $input = document.getElementById('eis-input');
   var $sub = document.getElementById('eis-sub');
   var $status = document.getElementById('eis-status');
+  var $where = document.getElementById('eis-where');
+  var $file = document.getElementById('eis-file');
+  var $modalRoot = document.getElementById('eis-modal-root');
+  var $railList = document.getElementById('cal-rail-list');
+  var $rail = document.getElementById('cal-rail');
+  var $calHead = document.getElementById('cal-head');
+  var $calAxis = document.getElementById('cal-axis');
+  var $calBody = $calAxis.parentNode;
+  var $calScroll = document.getElementById('cal-scroll');
+  var $calRange = document.getElementById('cal-range');
 
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
+
+  /* ---------- dates and times ---------- */
+
+  function stripTime(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+
+  function addDays(d, n) {
+    var c = stripTime(d);
+    c.setDate(c.getDate() + n);
+    return c;
+  }
+
+  function startOfWeek(d) {
+    var c = stripTime(d);
+    return addDays(c, -c.getDay());      // weeks start Sunday
+  }
+
+  function ymd(d) {
+    var m = d.getMonth() + 1, day = d.getDate();
+    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+  }
+
+  function parseYmd(s) {
+    var p = String(s).split('-');
+    return new Date(+p[0], (+p[1]) - 1, +p[2]);
+  }
+
+  function fmtTime(mins) {
+    var h = Math.floor(mins / 60) % 24, m = mins % 60;
+    var ap = h >= 12 ? 'pm' : 'am';
+    var hh = h % 12; if (hh === 0) hh = 12;
+    return hh + (m ? ':' + (m < 10 ? '0' : '') + m : '') + ap;
+  }
+
+  function fmtSpan(start, slots) {
+    return fmtTime(start) + '–' + fmtTime(start + slots * SLOT_MIN);
+  }
+
+  function fmtLength(slots) {
+    var mins = slots * SLOT_MIN;
+    if (mins < 60) return mins + ' min';
+    var h = Math.floor(mins / 60), m = mins % 60;
+    return h + (m ? '.5' : '') + ' hr' + (mins > 60 ? 's' : '');
+  }
+
+  function shortWhen(b) {
+    var d = parseYmd(b.date);
+    var diff = Math.round((d - stripTime(new Date())) / 86400000);
+    var day;
+    if (diff === 0) day = 'Today';
+    else if (diff === 1) day = 'Tomorrow';
+    else if (diff > 1 && diff < 7) day = DAYS_SHORT[d.getDay()];
+    else day = d.getDate() + ' ' + MONTHS[d.getMonth()];
+    return day + ' ' + fmtTime(b.start);
+  }
+
+  /* ---------- item helpers ---------- */
 
   function quadOf(item) {
     if (item.urgent && item.important) return 'q1';
@@ -306,25 +654,152 @@
     return 'q4';
   }
 
-  function find(id) {
-    var list = state[tab];
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].id === id) return list[i];
+  function eachItem(fn) {
+    ['do', 'buy'].forEach(function (list) {
+      state[list].forEach(function (it) { fn(it, list); });
+    });
+  }
+
+  function findItem(id) {
+    var found = null;
+    eachItem(function (it, list) { if (!found && it.id === id) found = { item: it, list: list }; });
+    return found;
+  }
+
+  function findBlock(id) {
+    for (var i = 0; i < state.blocks.length; i++) {
+      if (state.blocks[i].id === id) return state.blocks[i];
     }
     return null;
   }
 
+  function itemsInBlock(blockId) {
+    var out = [];
+    eachItem(function (it, list) { if (it.blockId === blockId) out.push({ item: it, list: list }); });
+    return out;
+  }
+
+  /* ---------- block helpers ---------- */
+
+  function overlaps(date, start, slots, exceptId) {
+    var a1 = start, a2 = start + slots * SLOT_MIN;
+    return state.blocks.some(function (b) {
+      if (b.id === exceptId || b.date !== date) return false;
+      var b1 = b.start, b2 = b.start + b.slots * SLOT_MIN;
+      return a1 < b2 && b1 < a2;
+    });
+  }
+
+  function slotOccupied(date, slot) {
+    return overlaps(date, slot * SLOT_MIN, 1, null);
+  }
+
+  // How many consecutive 30-minute slots are free starting at slot.
+  function freeRun(date, slot, exceptId) {
+    if (overlaps(date, slot * SLOT_MIN, 1, exceptId)) return 0;
+    var limit = SLOTS_PER_DAY - slot;
+    state.blocks.forEach(function (b) {
+      if (b.id === exceptId || b.date !== date) return;
+      var bs = b.start / SLOT_MIN;
+      if (bs > slot) limit = Math.min(limit, bs - slot);
+    });
+    return Math.max(0, limit);
+  }
+
+  function firstFreeSlot(date, from) {
+    for (var s = from; s < SLOTS_PER_DAY; s++) if (!slotOccupied(date, s)) return s;
+    for (var t = 0; t < from; t++) if (!slotOccupied(date, t)) return t;
+    return -1;
+  }
+
+  function blocksFrom(date) {
+    return state.blocks.filter(function (b) { return b.date >= date; })
+      .sort(function (a, b) {
+        if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+        return a.start - b.start;
+      });
+  }
+
+  /* ---------- tags ---------- */
+
+  function findTag(id) {
+    for (var i = 0; i < state.tags.length; i++) {
+      if (state.tags[i].id === id) return state.tags[i];
+    }
+    return null;
+  }
+
+  function blockTags(b) {
+    return (b.tags || []).map(findTag).filter(Boolean);
+  }
+
+  function blockColor(b) {
+    var t = blockTags(b);
+    return t.length ? t[0].color : BLOCK_COLOR;
+  }
+
+  function blockLabel(b) {
+    var t = blockTags(b);
+    return t.length ? t.map(function (x) { return x.name; }).join(' · ') : 'Focus';
+  }
+
+  function nextColor() {
+    return TAG_COLORS[state.tags.length % TAG_COLORS.length];
+  }
+
+  function addTagRaw(name, color) {
+    var t = { id: uid(), name: name, color: color || nextColor() };
+    state.tags.push(t);
+    return t;
+  }
+
+  function deleteTag(id) {
+    state.tags = state.tags.filter(function (t) { return t.id !== id; });
+    state.blocks.forEach(function (b) {
+      if (Array.isArray(b.tags)) {
+        b.tags = b.tags.filter(function (x) { return x !== id; });
+      }
+    });
+    save();
+  }
+
+  function toggleBlockTag(b, tagId) {
+    b.tags = b.tags || [];
+    var i = b.tags.indexOf(tagId);
+    if (i === -1) b.tags.push(tagId); else b.tags.splice(i, 1);
+    save();
+  }
+
+  function addBlock(date, startSlot, slots) {
+    var b = {
+      id: uid(), date: date, start: startSlot * SLOT_MIN,
+      slots: slots, tags: []
+    };
+    state.blocks.push(b);
+    save();
+    return b;
+  }
+
+  function deleteBlock(id) {
+    eachItem(function (it) { if (it.blockId === id) it.blockId = null; });
+    state.blocks = state.blocks.filter(function (b) { return b.id !== id; });
+    save();
+  }
+
+  function assign(itemId, blockId) {
+    var found = findItem(itemId);
+    if (!found) return;
+    found.item.blockId = blockId;
+    save();
+  }
+
   /* ---------- storage ----------
-     Three places your items can live, tried in this order:
-       1. window.storage  - exists only inside the Claude artifact sandbox
-       2. localStorage    - works when this file is served over http(s),
-                            and in most browsers when opened straight off disk
-       3. memory          - last resort; a backup file is the only way out
-     Whichever is in use is named under the footer, so it is never a guess. */
+     Three places the data can live, tried in this order:
+       1. window.storage  - only inside the Claude artifact sandbox
+       2. localStorage    - any http(s) origin, and most browsers on file://
+       3. memory          - a backup file is then the only way out       */
 
   var backend = 'memory';
-  var $where = document.getElementById('eis-where');
-  var $file = document.getElementById('eis-file');
 
   function localWorks() {
     try {
@@ -332,21 +807,92 @@
       window.localStorage.setItem(probe, '1');
       window.localStorage.removeItem(probe);
       return true;
-    } catch (e) {
-      return false;
-    }
+    } catch (e) { return false; }
+  }
+
+  function normaliseItems(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(function (i) { return i && typeof i.text === 'string'; })
+      .map(function (i) {
+        return {
+          id: i.id || uid(), text: i.text,
+          urgent: !!i.urgent, important: !!i.important,
+          done: !!i.done, blockId: i.blockId || null
+        };
+      });
+  }
+
+  function normaliseTags(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(function (t) { return t && typeof t.name === 'string'; })
+      .slice(0, MAX_TAGS)
+      .map(function (t) {
+        return {
+          id: t.id || uid(),
+          name: t.name.slice(0, 28) || 'Untitled',
+          color: /^#[0-9a-fA-F]{6}$/.test(t.color) ? t.color : TAG_COLORS[0]
+        };
+      });
+  }
+
+  function normaliseBlocks(arr, liveTagIds) {
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(function (b) {
+      return b && typeof b.date === 'string' && typeof b.start === 'number';
+    }).map(function (b) {
+      var slots = Math.max(1, Math.min(SLOTS_PER_DAY, parseInt(b.slots, 10) || 1));
+      var tags = Array.isArray(b.tags)
+        ? b.tags.filter(function (id) { return liveTagIds[id]; })
+        : [];
+      return {
+        id: b.id || uid(), date: b.date,
+        start: Math.max(0, Math.min((SLOTS_PER_DAY - 1) * SLOT_MIN, b.start)),
+        slots: slots,
+        tags: tags
+      };
+    });
+  }
+
+  function prune() {
+    var live = {};
+    state.blocks.forEach(function (b) { live[b.id] = true; });
+    eachItem(function (it) { if (it.blockId && !live[it.blockId]) it.blockId = null; });
   }
 
   function apply(raw) {
     try {
       var parsed = JSON.parse(raw);
-      if (!parsed || (!Array.isArray(parsed.do) && !Array.isArray(parsed.buy))) return false;
-      state.do = Array.isArray(parsed.do) ? parsed.do : [];
-      state.buy = Array.isArray(parsed.buy) ? parsed.buy : [];
+      if (!parsed || typeof parsed !== 'object') return false;
+      if (!Array.isArray(parsed.do) && !Array.isArray(parsed.buy)) return false;
+
+      state.tags = normaliseTags(parsed.tags);
+
+      // Blocks from the earlier build carried a type rather than tags.
+      // Turn any non-default type into a tag so the distinction survives.
+      var carried = {};
+      if (Array.isArray(parsed.blocks)) {
+        parsed.blocks.forEach(function (b) {
+          if (!b || Array.isArray(b.tags)) return;
+          if (!b.type || b.type === 'focus') return;
+          if (!carried[b.type]) {
+            var name = b.type.charAt(0).toUpperCase() + b.type.slice(1);
+            var existing = null;
+            state.tags.forEach(function (t) { if (t.name === name) existing = t; });
+            carried[b.type] = existing || addTagRaw(name);
+          }
+          b.tags = [carried[b.type].id];
+        });
+      }
+
+      var liveTagIds = {};
+      state.tags.forEach(function (t) { liveTagIds[t.id] = true; });
+
+      state.do = normaliseItems(parsed.do);
+      state.buy = normaliseItems(parsed.buy);
+      state.blocks = normaliseBlocks(parsed.blocks, liveTagIds);
+      prune();
       return true;
-    } catch (e) {
-      return false;
-    }
+    } catch (e) { return false; }
   }
 
   function load() {
@@ -355,9 +901,7 @@
       window.storage.get(KEY).then(function (res) {
         if (res && res.value) apply(res.value);
         ready();
-      }).catch(function () {
-        ready();
-      });
+      }).catch(function () { ready(); });
       return;
     }
     if (localWorks()) {
@@ -376,13 +920,13 @@
 
   function describe() {
     if (backend === 'claude') {
-      $where.textContent = 'Your items are saved inside Claude and will be here next time you open this artifact. '
+      $where.textContent = 'Your items and blocks are saved inside Claude and will be here next time you open this artifact. '
         + 'If you download the file to use on your own, save a backup first and load it back in.';
     } else if (backend === 'local') {
-      $where.textContent = 'Your items are saved in this browser, on this machine. They survive a refresh. '
+      $where.textContent = 'Your items and blocks are saved in this browser, on this machine. They survive a refresh. '
         + 'Clearing browsing data, or switching to another browser or device, will not carry them over, so keep a backup file.';
     } else {
-      $where.textContent = 'This browser will not let a file opened from disk save data, so your items will be gone on refresh. '
+      $where.textContent = 'This browser will not let a file opened from disk save data, so everything will be gone on refresh. '
         + 'Either save a backup file before you close the tab, or serve the file from a local web server and it will save normally.';
     }
   }
@@ -396,12 +940,8 @@
         describe();
       });
     } else if (backend === 'local') {
-      try {
-        window.localStorage.setItem(KEY, payload);
-      } catch (e) {
-        backend = 'memory';
-        describe();
-      }
+      try { window.localStorage.setItem(KEY, payload); }
+      catch (e) { backend = 'memory'; describe(); }
     }
   }
 
@@ -417,7 +957,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'eisenhower-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.download = 'eisenhower-' + ymd(new Date()) + '.json';
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -442,9 +982,6 @@
     reader.readAsText(f);
   });
 
-  document.getElementById('eis-export').addEventListener('click', exportBackup);
-  document.getElementById('eis-import').addEventListener('click', function () { $file.click(); });
-
   /* ---------- actions ---------- */
 
   function add() {
@@ -453,7 +990,7 @@
     state[tab].push({
       id: uid(), text: text,
       urgent: pending.urgent, important: pending.important,
-      done: false
+      done: false, blockId: null
     });
     $input.value = '';
     $input.focus();
@@ -462,18 +999,18 @@
   }
 
   function move(id, urgent, important) {
-    var item = find(id);
-    if (!item) return;
-    item.urgent = urgent;
-    item.important = important;
+    var found = findItem(id);
+    if (!found) return;
+    found.item.urgent = urgent;
+    found.item.important = important;
     save();
     render();
   }
 
   function toggle(id) {
-    var item = find(id);
-    if (!item) return;
-    item.done = !item.done;
+    var found = findItem(id);
+    if (!found) return;
+    found.item.done = !found.item.done;
     save();
     render();
   }
@@ -484,31 +1021,47 @@
     render();
   }
 
-  /* ---------- render ---------- */
+  function closeMenu() {
+    if (openMenu) { openMenu.remove(); openMenu = null; }
+  }
+
+  /* ---------- render switchboard ---------- */
 
   function render() {
+    closeMenu();
+    if (view === 'matrix') renderMatrix();
+    else renderCalendar();
+    renderStatus();
+  }
+
+  function renderStatus() {
+    var cfg = TABS[tab];
+    var list = state[tab];
+    if (!list.length) { $status.textContent = ''; return; }
+    var left = list.filter(function (i) { return !i.done; }).length;
+    var planned = list.filter(function (i) { return !i.done && i.blockId; }).length;
+    var txt = left + ' open of ' + list.length + ' ' + (list.length === 1 ? cfg.noun : cfg.noun + 's');
+    if (left) txt += ', ' + planned + ' scheduled';
+    $status.textContent = txt;
+  }
+
+  /* ---------- matrix ---------- */
+
+  function renderMatrix() {
     var cfg = TABS[tab];
     $input.placeholder = cfg.placeholder;
     $grid.innerHTML = '';
-    openMenu = null;
-
-    var total = 0, left = 0;
 
     QUADS.forEach(function (q) {
       var items = state[tab].filter(function (i) { return quadOf(i) === q.id; });
       items.sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
       var open = items.filter(function (i) { return !i.done; }).length;
-      total += items.length;
-      left += open;
 
       var cell = document.createElement('section');
       cell.className = 'eis-quad' + (q.urgent ? ' is-urgent' : '') + (q.important ? ' is-important' : '');
       cell.setAttribute('aria-label', cfg.names[q.id]);
 
-      cell.addEventListener('dragover', function (e) {
-        e.preventDefault();
-        cell.classList.add('is-over');
-      });
+      cell.addEventListener('dragover', function (e) { e.preventDefault(); cell.classList.add('is-over'); });
       cell.addEventListener('dragleave', function () { cell.classList.remove('is-over'); });
       cell.addEventListener('drop', function (e) {
         e.preventDefault();
@@ -531,29 +1084,20 @@
 
       var list = document.createElement('ul');
       list.className = 'eis-list';
-
       if (!items.length) {
         var empty = document.createElement('li');
         empty.className = 'eis-empty';
         empty.textContent = cfg.empty[q.id];
         list.appendChild(empty);
       } else {
-        items.forEach(function (item) { list.appendChild(row(item, q)); });
+        items.forEach(function (item) { list.appendChild(matrixRow(item, q)); });
       }
-
       cell.appendChild(list);
       $grid.appendChild(cell);
     });
-
-    if (!total) {
-      $status.textContent = '';
-    } else {
-      $status.textContent = left + ' open of ' + total + ' ' + (total === 1 ? cfg.noun : cfg.noun + 's');
-    }
   }
 
-  function row(item, q) {
-    var cfg = TABS[tab];
+  function matrixRow(item, q) {
     var li = document.createElement('li');
     li.className = 'eis-item' + (item.done ? ' is-done' : '');
     li.draggable = true;
@@ -572,22 +1116,43 @@
     check.setAttribute('aria-label', 'Mark "' + item.text + '" finished');
     check.addEventListener('change', function () { toggle(item.id); });
 
-    var text = document.createElement('span');
+    var body = document.createElement('div');
+    body.className = 'eis-body';
+    var text = document.createElement('div');
     text.className = 'eis-text';
     text.textContent = item.text;
+    body.appendChild(text);
+
+    var block = item.blockId ? findBlock(item.blockId) : null;
+    if (block) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'eis-when';
+      chip.textContent = shortWhen(block) + ' · ' + blockLabel(block);
+      chip.setAttribute('aria-label', 'Change when "' + item.text + '" is scheduled');
+      chip.addEventListener('click', function (e) {
+        e.stopPropagation();
+        showScheduleMenu(li, item);
+      });
+      body.appendChild(chip);
+    }
 
     var acts = document.createElement('span');
     acts.className = 'eis-acts';
+
+    var when = document.createElement('button');
+    when.type = 'button';
+    when.className = 'eis-iconbtn';
+    when.textContent = block ? 'When' : 'Schedule';
+    when.setAttribute('aria-label', 'Schedule "' + item.text + '"');
+    when.addEventListener('click', function (e) { e.stopPropagation(); showScheduleMenu(li, item); });
 
     var moveBtn = document.createElement('button');
     moveBtn.type = 'button';
     moveBtn.className = 'eis-iconbtn';
     moveBtn.textContent = 'Move';
     moveBtn.setAttribute('aria-label', 'Move "' + item.text + '" to another quadrant');
-    moveBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      showMenu(li, item, q);
-    });
+    moveBtn.addEventListener('click', function (e) { e.stopPropagation(); showMoveMenu(li, item, q); });
 
     var del = document.createElement('button');
     del.type = 'button';
@@ -596,53 +1161,820 @@
     del.setAttribute('aria-label', 'Delete "' + item.text + '"');
     del.addEventListener('click', function () { remove(item.id); });
 
+    acts.appendChild(when);
     acts.appendChild(moveBtn);
     acts.appendChild(del);
 
     li.appendChild(check);
-    li.appendChild(text);
+    li.appendChild(body);
     li.appendChild(acts);
     return li;
   }
 
-  function showMenu(li, item, current) {
-    if (openMenu) { openMenu.remove(); openMenu = null; }
-    var cfg = TABS[tab];
+  function mountMenu(li) {
+    closeMenu();
     var menu = document.createElement('div');
     menu.className = 'eis-menu';
-
-    QUADS.forEach(function (q) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = cfg.names[q.id];
-      if (q.id === current.id) {
-        b.disabled = true;
-      } else {
-        b.addEventListener('click', function () { move(item.id, q.urgent, q.important); });
-      }
-      menu.appendChild(b);
-    });
-
     li.appendChild(menu);
     openMenu = menu;
+    return menu;
+  }
+
+  function focusFirst(menu) {
     var first = menu.querySelector('button:not([disabled])');
     if (first) first.focus();
   }
 
-  document.addEventListener('click', function (e) {
-    if (openMenu && !openMenu.contains(e.target)) { openMenu.remove(); openMenu = null; }
+  function showMoveMenu(li, item, current) {
+    var cfg = TABS[tab];
+    var menu = mountMenu(li);
+    QUADS.forEach(function (q) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = cfg.names[q.id];
+      if (q.id === current.id) b.disabled = true;
+      else b.addEventListener('click', function () { move(item.id, q.urgent, q.important); });
+      menu.appendChild(b);
+    });
+    focusFirst(menu);
+  }
+
+  function showScheduleMenu(li, item) {
+    var menu = mountMenu(li);
+    var today = ymd(new Date());
+    var upcoming = blocksFrom(today).slice(0, 14);
+
+    if (item.blockId) {
+      var off = document.createElement('button');
+      off.type = 'button';
+      off.textContent = 'Unschedule';
+      off.addEventListener('click', function () { assign(item.id, null); render(); });
+      menu.appendChild(off);
+    }
+
+    if (!upcoming.length) {
+      var head = document.createElement('div');
+      head.className = 'eis-menu-head';
+      head.textContent = 'No blocks yet';
+      menu.appendChild(head);
+      var go = document.createElement('button');
+      go.type = 'button';
+      go.textContent = 'Open the calendar';
+      go.addEventListener('click', function () { setView('calendar'); });
+      menu.appendChild(go);
+      focusFirst(menu);
+      return;
+    }
+
+    var lastDate = null;
+    upcoming.forEach(function (b) {
+      if (b.date !== lastDate) {
+        lastDate = b.date;
+        var d = parseYmd(b.date);
+        var head = document.createElement('div');
+        head.className = 'eis-menu-head';
+        head.textContent = DAYS_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+        menu.appendChild(head);
+      }
+      var n = itemsInBlock(b.id).length;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = blockLabel(b) + ' · ' + fmtSpan(b.start, b.slots)
+        + (n ? ' · ' + n + ' in it' : '');
+      if (b.id === item.blockId) btn.disabled = true;
+      else btn.addEventListener('click', function () { assign(item.id, b.id); render(); });
+      menu.appendChild(btn);
+    });
+    focusFirst(menu);
+  }
+
+  /* ---------- calendar ---------- */
+
+  function renderCalendar() {
+    var days = [];
+    for (var i = 0; i < 7; i++) days.push(addDays(weekStart, i));
+    var todayKey = ymd(new Date());
+
+    var a = days[0], b = days[6];
+    var range = a.getDate() + ' ' + MONTHS[a.getMonth()] + ' – ' + b.getDate() + ' ' + MONTHS[b.getMonth()];
+    if (a.getFullYear() !== new Date().getFullYear()) range += ' ' + b.getFullYear();
+    $calRange.textContent = range;
+
+    // headers
+    $calHead.innerHTML = '';
+    var spacer = document.createElement('div');
+    $calHead.appendChild(spacer);
+    days.forEach(function (d) {
+      var cell = document.createElement('div');
+      if (ymd(d) === todayKey) cell.className = 'is-today';
+      cell.innerHTML = DAYS_SHORT[d.getDay()] + '<b>' + d.getDate() + '</b>';
+      $calHead.appendChild(cell);
+    });
+
+    // time axis
+    $calAxis.innerHTML = '';
+    $calAxis.style.height = (SLOTS_PER_DAY * SLOT_H) + 'px';
+    for (var h = 0; h < 24; h++) {
+      var lab = document.createElement('span');
+      lab.style.top = (h * 2 * SLOT_H + 3) + 'px';
+      lab.textContent = fmtTime(h * 60);
+      $calAxis.appendChild(lab);
+    }
+
+    // day columns
+    Array.prototype.slice.call($calBody.querySelectorAll('.cal-col')).forEach(function (n) { n.remove(); });
+    days.forEach(function (d) { $calBody.appendChild(dayColumn(d, todayKey)); });
+
+    renderRail();
+  }
+
+  function dayColumn(d, todayKey) {
+    var date = ymd(d);
+    var col = document.createElement('div');
+    col.className = 'cal-col' + (d.getDay() === 0 || d.getDay() === 6 ? ' is-weekend' : '');
+    col.style.height = (SLOTS_PER_DAY * SLOT_H) + 'px';
+    col.dataset.date = date;
+
+    if (date === todayKey) {
+      var now = new Date();
+      var line = document.createElement('div');
+      line.className = 'cal-now';
+      line.style.top = ((now.getHours() * 60 + now.getMinutes()) / SLOT_MIN * SLOT_H) + 'px';
+      col.appendChild(line);
+    }
+
+    state.blocks.filter(function (b) { return b.date === date; })
+      .forEach(function (b) { col.appendChild(blockEl(b)); });
+
+    // drag a task onto empty grid space to create a block around it
+    col.addEventListener('dragover', function (e) {
+      if (!dragItemId) return;
+      e.preventDefault();
+      col.classList.add('is-over');
+    });
+    col.addEventListener('dragleave', function () { col.classList.remove('is-over'); });
+    col.addEventListener('drop', function (e) {
+      col.classList.remove('is-over');
+      var id = e.dataTransfer.getData('text/plain') || dragItemId;
+      if (!id) return;
+      e.preventDefault();
+      var slot = slotFromY(e.clientY, col);
+      if (slot < 0 || slot >= SLOTS_PER_DAY) return;
+      if (slotOccupied(date, slot)) return;
+      var nb = addBlock(date, slot, 1);
+      assign(id, nb.id);
+      $status.textContent = 'New focus block at ' + fmtTime(nb.start) + '.';
+      render();
+    });
+
+    // drag down empty space to create a block
+    col.addEventListener('pointerdown', function (e) { startCreate(e, col, date); });
+    col.addEventListener('pointermove', moveCreate);
+    col.addEventListener('pointerup', endCreate);
+    col.addEventListener('pointercancel', abortCreate);
+
+    return col;
+  }
+
+  function blockEl(b) {
+    var el = document.createElement('div');
+    el.className = 'cal-block';
+    el.style.top = (b.start / SLOT_MIN * SLOT_H) + 'px';
+    el.style.height = (b.slots * SLOT_H - 3) + 'px';
+    el.style.background = blockColor(b);
+    el.dataset.blockId = b.id;
+
+    var assigned = itemsInBlock(b.id);
+
+    var time = document.createElement('div');
+    time.className = 'cal-block-time';
+    time.textContent = fmtTime(b.start) + ' · ' + blockLabel(b)
+      + (assigned.length ? ' · ' + assigned.length : '');
+    el.appendChild(time);
+
+    assigned.forEach(function (rec) {
+      var t = document.createElement('div');
+      t.className = 'cal-task' + (rec.item.done ? ' is-done' : '') + (rec.list === 'buy' ? ' is-buy' : '');
+      t.textContent = rec.item.text;
+      t.draggable = true;
+      t.addEventListener('dragstart', function (e) {
+        e.stopPropagation();
+        dragItemId = rec.item.id;
+        e.dataTransfer.setData('text/plain', rec.item.id);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      t.addEventListener('dragend', function () { dragItemId = null; });
+      el.appendChild(t);
+    });
+
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      openBlockEditor(b.id);
+    });
+
+    el.addEventListener('dragover', function (e) {
+      if (!dragItemId) return;
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.add('is-over');
+    });
+    el.addEventListener('dragleave', function () { el.classList.remove('is-over'); });
+    el.addEventListener('drop', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.remove('is-over');
+      var id = e.dataTransfer.getData('text/plain') || dragItemId;
+      if (id) { assign(id, b.id); render(); }
+    });
+
+    return el;
+  }
+
+  function slotFromY(clientY, col) {
+    var r = col.getBoundingClientRect();
+    return Math.floor((clientY - r.top) / SLOT_H);
+  }
+
+  function startCreate(e, col, date) {
+    if (e.pointerType === 'touch') return;          // touch scrolls; use the New block button
+    if (e.button !== 0) return;
+    if (e.target && e.target.closest && e.target.closest('.cal-block')) return;
+    var slot = slotFromY(e.clientY, col);
+    if (slot < 0 || slot >= SLOTS_PER_DAY) return;
+    if (slotOccupied(date, slot)) return;
+
+    e.preventDefault();
+    try { col.setPointerCapture(e.pointerId); } catch (err) {}
+
+    var ghost = document.createElement('div');
+    ghost.className = 'cal-ghost';
+    col.appendChild(ghost);
+
+    creating = {
+      col: col, date: date, pointerId: e.pointerId,
+      start: slot, end: slot, ghost: ghost,
+      max: freeRun(date, slot, null)
+    };
+    paintGhost();
+  }
+
+  function moveCreate(e) {
+    if (!creating || e.pointerId !== creating.pointerId) return;
+    var slot = slotFromY(e.clientY, creating.col);
+    slot = Math.max(creating.start, Math.min(slot, creating.start + creating.max - 1));
+    if (slot !== creating.end) { creating.end = slot; paintGhost(); }
+  }
+
+  function paintGhost() {
+    var n = creating.end - creating.start + 1;
+    creating.ghost.style.top = (creating.start * SLOT_H) + 'px';
+    creating.ghost.style.height = (n * SLOT_H - 3) + 'px';
+    creating.ghost.textContent = fmtSpan(creating.start * SLOT_MIN, n) + ' · ' + fmtLength(n);
+  }
+
+  function endCreate(e) {
+    if (!creating || e.pointerId !== creating.pointerId) return;
+    var c = creating;
+    creating = null;
+    if (c.ghost.parentNode) c.ghost.remove();
+    try { c.col.releasePointerCapture(c.pointerId); } catch (err) {}
+    var n = c.end - c.start + 1;
+    var b = addBlock(c.date, c.start, n);
+    $status.textContent = 'Focus block added, ' + fmtLength(n) + '.';
+    render();
+    openBlockEditor(b.id);
+  }
+
+  function abortCreate() {
+    if (!creating) return;
+    if (creating.ghost.parentNode) creating.ghost.remove();
+    creating = null;
+  }
+
+  function renderRail() {
+    var cfg = TABS[tab];
+    $railList.innerHTML = '';
+    var any = false;
+
+    QUADS.forEach(function (q) {
+      var items = state[tab].filter(function (i) {
+        return !i.done && !i.blockId && quadOf(i) === q.id;
+      });
+      if (!items.length) return;
+      any = true;
+
+      var head = document.createElement('p');
+      head.className = 'cal-rail-group';
+      head.textContent = cfg.names[q.id];
+      $railList.appendChild(head);
+
+      items.forEach(function (item) {
+        var pill = document.createElement('div');
+        pill.className = 'cal-pill';
+        pill.textContent = item.text;
+        pill.draggable = true;
+        pill.title = 'Drag onto a block, or onto empty space to make one';
+        pill.addEventListener('dragstart', function (e) {
+          dragItemId = item.id;
+          e.dataTransfer.setData('text/plain', item.id);
+          e.dataTransfer.effectAllowed = 'move';
+          pill.classList.add('is-dragging');
+        });
+        pill.addEventListener('dragend', function () {
+          dragItemId = null;
+          pill.classList.remove('is-dragging');
+        });
+        $railList.appendChild(pill);
+      });
+    });
+
+    if (!any) {
+      var empty = document.createElement('p');
+      empty.className = 'eis-empty';
+      empty.textContent = state[tab].length
+        ? 'Everything open is scheduled.'
+        : 'Nothing here yet. Add items in the matrix.';
+      $railList.appendChild(empty);
+    }
+  }
+
+  $rail.addEventListener('dragover', function (e) {
+    if (!dragItemId) return;
+    e.preventDefault();
+    $rail.classList.add('is-over');
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && openMenu) { openMenu.remove(); openMenu = null; }
+  $rail.addEventListener('dragleave', function () { $rail.classList.remove('is-over'); });
+  $rail.addEventListener('drop', function (e) {
+    $rail.classList.remove('is-over');
+    var id = e.dataTransfer.getData('text/plain') || dragItemId;
+    if (!id) return;
+    e.preventDefault();
+    assign(id, null);
+    render();
   });
 
-  /* ---------- controls ---------- */
+  /* ---------- block editor ---------- */
+
+  function openBlockEditor(blockId) {
+    var b = findBlock(blockId);
+    if (!b) return;
+    closeMenu();
+    $modalRoot.innerHTML = '';
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'eis-backdrop';
+    var card = document.createElement('div');
+    card.className = 'eis-modal';
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-modal', 'true');
+    card.setAttribute('aria-label', 'Edit block');
+    backdrop.appendChild(card);
+
+    function close() {
+      $modalRoot.innerHTML = '';
+      document.removeEventListener('keydown', onKey);
+    }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('mousedown', function (e) { if (e.target === backdrop) close(); });
+
+    var warn;
+
+    function relocate(date, start, slots) {
+      if (start + slots * SLOT_MIN > SLOTS_PER_DAY * SLOT_MIN) {
+        warn.textContent = 'That would run past midnight.';
+        return false;
+      }
+      if (overlaps(date, start, slots, b.id)) {
+        warn.textContent = 'That would overlap another block on the same day.';
+        return false;
+      }
+      b.date = date; b.start = start; b.slots = slots;
+      warn.textContent = '';
+      save();
+      renderCalendar();
+      return true;
+    }
+
+    function draw() {
+      card.innerHTML = '';
+
+      var head = document.createElement('div');
+      head.className = 'eis-modal-head';
+      var titles = document.createElement('div');
+      var h2 = document.createElement('h2');
+      h2.textContent = 'Focus block';
+      var sub = document.createElement('p');
+      sub.className = 'eis-modal-sub';
+      var d = parseYmd(b.date);
+      sub.textContent = DAYS_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()]
+        + ' · ' + fmtSpan(b.start, b.slots) + ' · ' + fmtLength(b.slots);
+      titles.appendChild(h2);
+      titles.appendChild(sub);
+      var x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'eis-x';
+      x.innerHTML = '&times;';
+      x.setAttribute('aria-label', 'Close');
+      x.addEventListener('click', close);
+      head.appendChild(titles);
+      head.appendChild(x);
+      card.appendChild(head);
+
+      warn = document.createElement('p');
+      warn.className = 'eis-warn';
+      card.appendChild(warn);
+
+      // tags
+      var tagField = document.createElement('div');
+      tagField.className = 'eis-field';
+      tagField.innerHTML = '<span class="eis-label">Tags</span>';
+
+      if (!state.tags.length) {
+        var noTags = document.createElement('p');
+        noTags.className = 'tag-empty';
+        noTags.textContent = 'No tags yet. Tags label a block and colour it on the grid.';
+        tagField.appendChild(noTags);
+      } else {
+        var chips = document.createElement('div');
+        chips.className = 'eis-chips';
+        state.tags.forEach(function (t) {
+          var on = (b.tags || []).indexOf(t.id) !== -1;
+          var chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'eis-chip';
+          chip.setAttribute('aria-pressed', String(on));
+          var dot = document.createElement('i');
+          dot.style.background = t.color;
+          chip.appendChild(dot);
+          chip.appendChild(document.createTextNode(t.name));
+          if (on) chip.style.background = t.color;
+          chip.addEventListener('click', function () {
+            toggleBlockTag(b, t.id);
+            renderCalendar();
+            draw();
+          });
+          chips.appendChild(chip);
+        });
+        tagField.appendChild(chips);
+      }
+
+      var editTags = document.createElement('button');
+      editTags.type = 'button';
+      editTags.className = 'eis-link';
+      editTags.textContent = state.tags.length ? 'Edit tags' : 'Create a tag';
+      editTags.addEventListener('click', function () {
+        close();
+        openTagManager(function () { openBlockEditor(b.id); });
+      });
+      tagField.appendChild(editTags);
+      card.appendChild(tagField);
+
+      // day / start / length
+      var row = document.createElement('div');
+      row.className = 'eis-row';
+
+      var dayField = document.createElement('div');
+      dayField.className = 'eis-field';
+      dayField.innerHTML = '<span class="eis-label">Day</span>';
+      var daySel = document.createElement('select');
+      daySel.className = 'eis-select';
+      var seen = {};
+      for (var i = 0; i < 7; i++) {
+        var dd = addDays(weekStart, i);
+        seen[ymd(dd)] = true;
+        daySel.appendChild(opt(ymd(dd), DAYS_SHORT[dd.getDay()] + ' ' + dd.getDate() + ' ' + MONTHS[dd.getMonth()]));
+      }
+      if (!seen[b.date]) {
+        var od = parseYmd(b.date);
+        daySel.appendChild(opt(b.date, DAYS_SHORT[od.getDay()] + ' ' + od.getDate() + ' ' + MONTHS[od.getMonth()]));
+      }
+      daySel.value = b.date;
+      daySel.addEventListener('change', function () {
+        if (!relocate(daySel.value, b.start, b.slots)) daySel.value = b.date;
+        else draw();
+      });
+      dayField.appendChild(daySel);
+
+      var startField = document.createElement('div');
+      startField.className = 'eis-field';
+      startField.innerHTML = '<span class="eis-label">Starts</span>';
+      var startSel = document.createElement('select');
+      startSel.className = 'eis-select';
+      for (var s = 0; s < SLOTS_PER_DAY; s++) {
+        startSel.appendChild(opt(String(s * SLOT_MIN), fmtTime(s * SLOT_MIN)));
+      }
+      startSel.value = String(b.start);
+      startSel.addEventListener('change', function () {
+        if (!relocate(b.date, parseInt(startSel.value, 10), b.slots)) startSel.value = String(b.start);
+        else draw();
+      });
+      startField.appendChild(startSel);
+
+      var lenField = document.createElement('div');
+      lenField.className = 'eis-field';
+      lenField.innerHTML = '<span class="eis-label">Length</span>';
+      var lenSel = document.createElement('select');
+      lenSel.className = 'eis-select';
+      var maxSlots = freeRun(b.date, b.start / SLOT_MIN, b.id);
+      for (var n = 1; n <= Math.max(maxSlots, b.slots); n++) {
+        lenSel.appendChild(opt(String(n), fmtLength(n)));
+      }
+      lenSel.value = String(b.slots);
+      lenSel.addEventListener('change', function () {
+        if (!relocate(b.date, b.start, parseInt(lenSel.value, 10))) lenSel.value = String(b.slots);
+        else draw();
+      });
+      lenField.appendChild(lenSel);
+
+      row.appendChild(dayField);
+      row.appendChild(startField);
+      row.appendChild(lenField);
+      card.appendChild(row);
+
+      // tasks
+      var taskField = document.createElement('div');
+      taskField.className = 'eis-field';
+      taskField.innerHTML = '<span class="eis-label">Tasks in this block</span>';
+      var box = document.createElement('div');
+      box.className = 'eis-tasks';
+
+      var rows = 0;
+      ['do', 'buy'].forEach(function (list) {
+        state[list].forEach(function (item) {
+          var mine = item.blockId === b.id;
+          if (!mine && (item.done || item.blockId)) return;
+          rows++;
+          var label = document.createElement('label');
+          label.className = 'eis-task-row';
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = mine;
+          cb.addEventListener('change', function () {
+            assign(item.id, cb.checked ? b.id : null);
+            renderCalendar();
+            draw();
+          });
+          var span = document.createElement('span');
+          span.textContent = item.text;
+          if (list === 'buy') {
+            var tag = document.createElement('span');
+            tag.className = 'eis-tag';
+            tag.textContent = 'buy';
+            span.appendChild(tag);
+          }
+          label.appendChild(cb);
+          label.appendChild(span);
+          box.appendChild(label);
+        });
+      });
+
+      if (!rows) {
+        var none = document.createElement('p');
+        none.className = 'eis-empty';
+        none.textContent = 'Nothing unscheduled to put in here.';
+        box.appendChild(none);
+      }
+      taskField.appendChild(box);
+      card.appendChild(taskField);
+
+      var foot = document.createElement('div');
+      foot.className = 'eis-modal-foot';
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'eis-danger';
+      del.textContent = 'Delete this block';
+      del.addEventListener('click', function () {
+        deleteBlock(b.id);
+        close();
+        render();
+      });
+      var done = document.createElement('button');
+      done.type = 'button';
+      done.className = 'cal-btn is-primary';
+      done.textContent = 'Done';
+      done.addEventListener('click', function () { close(); render(); });
+      foot.appendChild(del);
+      foot.appendChild(done);
+      card.appendChild(foot);
+    }
+
+    function opt(value, text) {
+      var o = document.createElement('option');
+      o.value = value;
+      o.textContent = text;
+      return o;
+    }
+
+    draw();
+    $modalRoot.appendChild(backdrop);
+    var firstControl = card.querySelector('select, button');
+    if (firstControl) firstControl.focus();
+  }
+
+  /* ---------- tag manager ---------- */
+
+  function openTagManager(onDone) {
+    closeMenu();
+    $modalRoot.innerHTML = '';
+    var openPalette = null;
+    var focusAdd = false;
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'eis-backdrop';
+    var card = document.createElement('div');
+    card.className = 'eis-modal';
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-modal', 'true');
+    card.setAttribute('aria-label', 'Tags');
+    backdrop.appendChild(card);
+
+    function close() {
+      $modalRoot.innerHTML = '';
+      document.removeEventListener('keydown', onKey);
+      render();
+      if (onDone) onDone();
+    }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('mousedown', function (e) { if (e.target === backdrop) close(); });
+
+    function draw() {
+      card.innerHTML = '';
+
+      var head = document.createElement('div');
+      head.className = 'eis-modal-head';
+      var titles = document.createElement('div');
+      var h2 = document.createElement('h2');
+      h2.textContent = 'Tags';
+      var sub = document.createElement('p');
+      sub.className = 'eis-modal-sub';
+      sub.textContent = 'Label your focus blocks however you like. The first tag on a block sets its colour.';
+      titles.appendChild(h2);
+      titles.appendChild(sub);
+      var x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'eis-x';
+      x.innerHTML = '&times;';
+      x.setAttribute('aria-label', 'Close');
+      x.addEventListener('click', close);
+      head.appendChild(titles);
+      head.appendChild(x);
+      card.appendChild(head);
+
+      if (!state.tags.length) {
+        var none = document.createElement('p');
+        none.className = 'tag-empty';
+        none.textContent = 'Nothing yet. Add your first tag below.';
+        card.appendChild(none);
+      }
+
+      state.tags.forEach(function (t) {
+        var row = document.createElement('div');
+        row.className = 'tag-row';
+
+        var dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'tag-dot';
+        dot.style.background = t.color;
+        dot.title = 'Change colour';
+        dot.setAttribute('aria-label', 'Change the colour of ' + t.name);
+        dot.setAttribute('aria-expanded', String(openPalette === t.id));
+        dot.addEventListener('click', function () {
+          openPalette = openPalette === t.id ? null : t.id;
+          draw();
+        });
+
+        var name = document.createElement('input');
+        name.className = 'tag-name';
+        name.value = t.name;
+        name.maxLength = 28;
+        name.setAttribute('aria-label', 'Tag name');
+        name.addEventListener('input', function () { t.name = name.value; save(); });
+        name.addEventListener('blur', function () {
+          if (!name.value.trim()) { t.name = 'Untitled'; name.value = t.name; save(); }
+          renderCalendar();
+        });
+
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'eis-x';
+        del.innerHTML = '&times;';
+        del.title = 'Delete this tag';
+        del.setAttribute('aria-label', 'Delete the tag ' + t.name);
+        del.addEventListener('click', function () {
+          deleteTag(t.id);
+          openPalette = null;
+          draw();
+        });
+
+        row.appendChild(dot);
+        row.appendChild(name);
+        row.appendChild(del);
+        card.appendChild(row);
+
+        if (openPalette === t.id) {
+          var pal = document.createElement('div');
+          pal.className = 'tag-palette';
+          TAG_COLORS.forEach(function (c) {
+            var sw = document.createElement('button');
+            sw.type = 'button';
+            sw.className = 'tag-swatch';
+            sw.style.background = c;
+            sw.setAttribute('aria-pressed', String(c === t.color));
+            sw.setAttribute('aria-label', 'Use this colour');
+            sw.addEventListener('click', function () {
+              t.color = c;
+              save();
+              openPalette = null;
+              renderCalendar();
+              draw();
+            });
+            pal.appendChild(sw);
+          });
+          card.appendChild(pal);
+        }
+      });
+
+      if (state.tags.length < MAX_TAGS) {
+        var addRow = document.createElement('div');
+        addRow.className = 'tag-row';
+        var field = document.createElement('input');
+        field.className = 'tag-name tag-add';
+        field.placeholder = 'New tag name';
+        field.maxLength = 28;
+        field.style.border = '1px solid var(--rule)';
+        field.setAttribute('aria-label', 'New tag name');
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'cal-btn';
+        btn.textContent = 'Add';
+
+        function commit() {
+          var v = field.value.trim();
+          if (!v) { field.focus(); return; }
+          addTagRaw(v);
+          save();
+          openPalette = null;
+          focusAdd = true;
+          draw();
+        }
+        btn.addEventListener('click', commit);
+        field.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        });
+
+        addRow.appendChild(field);
+        addRow.appendChild(btn);
+        card.appendChild(addRow);
+      }
+
+      var foot = document.createElement('div');
+      foot.className = 'eis-modal-foot';
+      foot.appendChild(document.createElement('span'));
+      var done = document.createElement('button');
+      done.type = 'button';
+      done.className = 'cal-btn is-primary';
+      done.textContent = 'Done';
+      done.addEventListener('click', close);
+      foot.appendChild(done);
+      card.appendChild(foot);
+
+      if (focusAdd) {
+        focusAdd = false;
+        var add = card.querySelector('.tag-add');
+        if (add) add.focus();
+      }
+    }
+
+    draw();
+    $modalRoot.appendChild(backdrop);
+    var first = card.querySelector('.tag-name, button');
+    if (first) first.focus();
+  }
+
+  /* ---------- view and tab switching ---------- */
+
+  function setView(next) {
+    view = next;
+    document.getElementById('view-matrix').hidden = next !== 'matrix';
+    document.getElementById('view-calendar').hidden = next !== 'calendar';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) {
+      b.setAttribute('aria-selected', String(b.dataset.view === next));
+    });
+    render();
+    if (next === 'calendar') $calScroll.scrollTop = 7 * 2 * SLOT_H;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (btn) {
+    btn.addEventListener('click', function () { setView(btn.dataset.view); });
+  });
 
   Array.prototype.forEach.call(document.querySelectorAll('.eis-tab'), function (btn) {
     btn.addEventListener('click', function () {
       tab = btn.dataset.tab;
       Array.prototype.forEach.call(document.querySelectorAll('.eis-tab'), function (b) {
-        b.setAttribute('aria-selected', String(b === btn));
+        b.setAttribute('aria-selected', String(b.dataset.tab === tab));
       });
       render();
     });
@@ -661,10 +1993,43 @@
     if (e.key === 'Enter') { e.preventDefault(); add(); }
   });
 
+  document.getElementById('cal-prev').addEventListener('click', function () {
+    weekStart = addDays(weekStart, -7); renderCalendar();
+  });
+  document.getElementById('cal-next').addEventListener('click', function () {
+    weekStart = addDays(weekStart, 7); renderCalendar();
+  });
+  document.getElementById('cal-today').addEventListener('click', function () {
+    weekStart = startOfWeek(new Date());
+    renderCalendar();
+    $calScroll.scrollTop = 7 * 2 * SLOT_H;
+  });
+  document.getElementById('cal-add').addEventListener('click', function () {
+    var today = stripTime(new Date());
+    var target = (today >= weekStart && today <= addDays(weekStart, 6)) ? today : weekStart;
+    var date = ymd(target);
+    var slot = firstFreeSlot(date, 18);            // 9am, then forward
+    if (slot < 0) { $status.textContent = 'That day is completely blocked out.'; return; }
+    var b = addBlock(date, slot, 1);
+    renderCalendar();
+    openBlockEditor(b.id);
+  });
+
+  document.getElementById('cal-tags').addEventListener('click', function () { openTagManager(); });
+
+  document.getElementById('eis-export').addEventListener('click', exportBackup);
+  document.getElementById('eis-import').addEventListener('click', function () { $file.click(); });
   document.getElementById('eis-clear').addEventListener('click', function () {
     state[tab] = state[tab].filter(function (i) { return !i.done; });
     save();
     render();
+  });
+
+  document.addEventListener('click', function (e) {
+    if (openMenu && !openMenu.contains(e.target)) closeMenu();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeMenu();
   });
 
   load();

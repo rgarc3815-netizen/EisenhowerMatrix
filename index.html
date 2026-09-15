@@ -201,7 +201,7 @@
   .cal-rail { background: var(--plane); border-radius: 2px; padding: 14px; }
   .cal-rail-title {
     font-family: 'Instrument Serif', Georgia, serif; font-size: 19px;
-    margin: 12px 0 8px;
+    margin: 0 0 10px;
   }
   .cal-rail.is-over { box-shadow: inset 0 0 0 2px var(--accent); }
   .cal-rail-group {
@@ -266,11 +266,6 @@
     word-break: break-word; cursor: grab;
   }
   .cal-task.is-done { opacity: 0.6; text-decoration: line-through; }
-  .cal-task.is-buy::before {
-    content: 'buy'; font-size: 8.5px; opacity: 0.75;
-    border: 1px solid currentColor; border-radius: 2px;
-    padding: 0 2px; margin-right: 4px; vertical-align: 1px;
-  }
 
   .cal-ghost {
     position: absolute; left: 2px; right: 3px; z-index: 4;
@@ -363,10 +358,6 @@
   }
   .eis-task-row:hover { background: var(--accent-soft); }
   .eis-task-row input { margin: 2px 0 0; flex: none; accent-color: var(--accent); }
-  .eis-tag {
-    font-size: 9px; color: var(--muted); border: 1px solid var(--rule);
-    border-radius: 2px; padding: 0 3px; margin-left: 5px; vertical-align: 1px;
-  }
   .eis-modal-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
   .eis-danger {
     font: inherit; font-size: 12.5px; border: 0; background: transparent;
@@ -468,11 +459,7 @@
 
       <div class="cal-layout">
         <aside class="cal-rail" id="cal-rail">
-          <div class="eis-seg" role="tablist" aria-label="List">
-            <button role="tab" class="eis-tab" data-tab="do" aria-selected="true">To do</button>
-            <button role="tab" class="eis-tab" data-tab="buy" aria-selected="false">To buy</button>
-          </div>
-          <p class="cal-rail-title">Unscheduled</p>
+          <p class="cal-rail-title">Unscheduled tasks</p>
           <div id="cal-rail-list"></div>
         </aside>
 
@@ -674,9 +661,8 @@
   }
 
   function itemsInBlock(blockId) {
-    var out = [];
-    eachItem(function (it, list) { if (it.blockId === blockId) out.push({ item: it, list: list }); });
-    return out;
+    return state.do.filter(function (it) { return it.blockId === blockId; })
+      .map(function (it) { return { item: it, list: 'do' }; });
   }
 
   /* ---------- block helpers ---------- */
@@ -789,6 +775,7 @@
   function assign(itemId, blockId) {
     var found = findItem(itemId);
     if (!found) return;
+    if (found.list !== 'do') return;      // purchases are not scheduled
     found.item.blockId = blockId;
     save();
   }
@@ -889,6 +876,7 @@
 
       state.do = normaliseItems(parsed.do);
       state.buy = normaliseItems(parsed.buy);
+      state.buy.forEach(function (i) { i.blockId = null; });
       state.blocks = normaliseBlocks(parsed.blocks, liveTagIds);
       prune();
       return true;
@@ -1041,7 +1029,7 @@
     var left = list.filter(function (i) { return !i.done; }).length;
     var planned = list.filter(function (i) { return !i.done && i.blockId; }).length;
     var txt = left + ' open of ' + list.length + ' ' + (list.length === 1 ? cfg.noun : cfg.noun + 's');
-    if (left) txt += ', ' + planned + ' scheduled';
+    if (left && tab === 'do') txt += ', ' + planned + ' scheduled';
     $status.textContent = txt;
   }
 
@@ -1123,7 +1111,7 @@
     text.textContent = item.text;
     body.appendChild(text);
 
-    var block = item.blockId ? findBlock(item.blockId) : null;
+    var block = (tab === 'do' && item.blockId) ? findBlock(item.blockId) : null;
     if (block) {
       var chip = document.createElement('button');
       chip.type = 'button';
@@ -1140,12 +1128,15 @@
     var acts = document.createElement('span');
     acts.className = 'eis-acts';
 
-    var when = document.createElement('button');
-    when.type = 'button';
-    when.className = 'eis-iconbtn';
-    when.textContent = block ? 'When' : 'Schedule';
-    when.setAttribute('aria-label', 'Schedule "' + item.text + '"');
-    when.addEventListener('click', function (e) { e.stopPropagation(); showScheduleMenu(li, item); });
+    if (tab === 'do') {
+      var when = document.createElement('button');
+      when.type = 'button';
+      when.className = 'eis-iconbtn';
+      when.textContent = block ? 'When' : 'Schedule';
+      when.setAttribute('aria-label', 'Schedule "' + item.text + '"');
+      when.addEventListener('click', function (e) { e.stopPropagation(); showScheduleMenu(li, item); });
+      acts.appendChild(when);
+    }
 
     var moveBtn = document.createElement('button');
     moveBtn.type = 'button';
@@ -1161,7 +1152,6 @@
     del.setAttribute('aria-label', 'Delete "' + item.text + '"');
     del.addEventListener('click', function () { remove(item.id); });
 
-    acts.appendChild(when);
     acts.appendChild(moveBtn);
     acts.appendChild(del);
 
@@ -1354,7 +1344,7 @@
 
     assigned.forEach(function (rec) {
       var t = document.createElement('div');
-      t.className = 'cal-task' + (rec.item.done ? ' is-done' : '') + (rec.list === 'buy' ? ' is-buy' : '');
+      t.className = 'cal-task' + (rec.item.done ? ' is-done' : '');
       t.textContent = rec.item.text;
       t.draggable = true;
       t.addEventListener('dragstart', function (e) {
@@ -1452,12 +1442,12 @@
   }
 
   function renderRail() {
-    var cfg = TABS[tab];
+    var cfg = TABS.do;
     $railList.innerHTML = '';
     var any = false;
 
     QUADS.forEach(function (q) {
-      var items = state[tab].filter(function (i) {
+      var items = state.do.filter(function (i) {
         return !i.done && !i.blockId && quadOf(i) === q.id;
       });
       if (!items.length) return;
@@ -1491,9 +1481,9 @@
     if (!any) {
       var empty = document.createElement('p');
       empty.className = 'eis-empty';
-      empty.textContent = state[tab].length
-        ? 'Everything open is scheduled.'
-        : 'Nothing here yet. Add items in the matrix.';
+      empty.textContent = state.do.length
+        ? 'Every open task is scheduled.'
+        : 'No tasks yet. Add them in the matrix.';
       $railList.appendChild(empty);
     }
   }
@@ -1700,39 +1690,31 @@
       box.className = 'eis-tasks';
 
       var rows = 0;
-      ['do', 'buy'].forEach(function (list) {
-        state[list].forEach(function (item) {
-          var mine = item.blockId === b.id;
-          if (!mine && (item.done || item.blockId)) return;
-          rows++;
-          var label = document.createElement('label');
-          label.className = 'eis-task-row';
-          var cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.checked = mine;
-          cb.addEventListener('change', function () {
-            assign(item.id, cb.checked ? b.id : null);
-            renderCalendar();
-            draw();
-          });
-          var span = document.createElement('span');
-          span.textContent = item.text;
-          if (list === 'buy') {
-            var tag = document.createElement('span');
-            tag.className = 'eis-tag';
-            tag.textContent = 'buy';
-            span.appendChild(tag);
-          }
-          label.appendChild(cb);
-          label.appendChild(span);
-          box.appendChild(label);
+      state.do.forEach(function (item) {
+        var mine = item.blockId === b.id;
+        if (!mine && (item.done || item.blockId)) return;
+        rows++;
+        var label = document.createElement('label');
+        label.className = 'eis-task-row';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = mine;
+        cb.addEventListener('change', function () {
+          assign(item.id, cb.checked ? b.id : null);
+          renderCalendar();
+          draw();
         });
+        var span = document.createElement('span');
+        span.textContent = item.text;
+        label.appendChild(cb);
+        label.appendChild(span);
+        box.appendChild(label);
       });
 
       if (!rows) {
         var none = document.createElement('p');
         none.className = 'eis-empty';
-        none.textContent = 'Nothing unscheduled to put in here.';
+        none.textContent = 'No unscheduled tasks to put in here.';
         box.appendChild(none);
       }
       taskField.appendChild(box);

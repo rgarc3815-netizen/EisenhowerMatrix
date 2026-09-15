@@ -261,6 +261,9 @@
     font-size: 10px; line-height: 1.3; opacity: 0.88;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .cal-block.is-busy { color: var(--ink); }
+  .cal-block.is-busy .cal-block-time { opacity: 1; font-weight: 500; }
+  .cal-block.is-busy:hover { filter: brightness(0.97); }
   .cal-task {
     font-size: 11px; line-height: 1.35; margin-top: 2px;
     word-break: break-word; cursor: grab;
@@ -305,6 +308,14 @@
     border: 1px solid var(--rule); border-radius: 2px; padding: 8px 9px; background: #fff;
   }
   .eis-select:focus-visible { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .eis-kind { display: flex; gap: 2px; background: var(--rule); padding: 2px; border-radius: 2px; }
+  .eis-kind button {
+    flex: 1; font: inherit; font-size: 12.5px; border: 0; background: #fff;
+    color: var(--muted); padding: 9px 6px; cursor: pointer; border-radius: 1px;
+  }
+  .eis-kind button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .eis-kind button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
   .eis-chips { display: flex; flex-wrap: wrap; gap: 5px; }
   .eis-chip {
     font: inherit; font-size: 12px; line-height: 1;
@@ -474,7 +485,7 @@
               </div>
             </div>
           </div>
-          <p class="cal-hint">Drag down an empty column to make a block. Drag a task onto a block to schedule it, or back to the rail to unschedule. Click a block to edit it.</p>
+          <p class="cal-hint">Drag down an empty column to make a block. Drag a task onto a focus block to schedule it, or back to the rail to unschedule. Click a block to tag it, retime it, or switch it to busy.</p>
         </div>
       </div>
     </section>
@@ -506,6 +517,7 @@
   var SLOT_H = 26;
 
   var BLOCK_COLOR = '#2F6248';        // an untagged focus block
+  var BUSY_COLOR  = '#5A6B58';        // an untagged busy block
   var TAG_COLORS = [
     '#3E7A57', '#5E7A33', '#2F6B63', '#7A6A2A',
     '#556B4F', '#4A6E8A', '#7A5240', '#8A4A44'
@@ -522,7 +534,7 @@
   var TABS = {
     do: {
       noun: 'task',
-      names: { q1: 'Do ASAP', q2: 'Schedule it', q3: 'Get it out of the way', q4: 'Let it go' },
+      names: { q1: 'Do now', q2: 'Schedule it', q3: 'Delegate or trim', q4: 'Let it go' },
       empty: {
         q1: 'Nothing on fire.',
         q2: 'The quadrant that pays off. Put something here.',
@@ -719,14 +731,24 @@
     return (b.tags || []).map(findTag).filter(Boolean);
   }
 
+  function isBusy(b) { return !!b && b.kind === 'busy'; }
+
   function blockColor(b) {
     var t = blockTags(b);
-    return t.length ? t[0].color : BLOCK_COLOR;
+    if (t.length) return t[0].color;
+    return isBusy(b) ? BUSY_COLOR : BLOCK_COLOR;
   }
 
   function blockLabel(b) {
     var t = blockTags(b);
-    return t.length ? t.map(function (x) { return x.name; }).join(' · ') : 'Focus';
+    if (t.length) return t.map(function (x) { return x.name; }).join(' · ');
+    return isBusy(b) ? 'Busy' : 'Focus';
+  }
+
+  function tint(hex, alpha) {
+    var h = hex.replace('#', '');
+    return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16)
+      + ',' + parseInt(h.slice(4, 6), 16) + ',' + alpha + ')';
   }
 
   function nextColor() {
@@ -756,10 +778,10 @@
     save();
   }
 
-  function addBlock(date, startSlot, slots) {
+  function addBlock(date, startSlot, slots, kind) {
     var b = {
       id: uid(), date: date, start: startSlot * SLOT_MIN,
-      slots: slots, tags: []
+      slots: slots, kind: kind === 'busy' ? 'busy' : 'focus', tags: []
     };
     state.blocks.push(b);
     save();
@@ -776,6 +798,10 @@
     var found = findItem(itemId);
     if (!found) return;
     if (found.list !== 'do') return;      // purchases are not scheduled
+    if (blockId) {
+      var target = findBlock(blockId);
+      if (!target || isBusy(target)) return;   // busy time holds no tasks
+    }
     found.item.blockId = blockId;
     save();
   }
@@ -835,6 +861,7 @@
         id: b.id || uid(), date: b.date,
         start: Math.max(0, Math.min((SLOTS_PER_DAY - 1) * SLOT_MIN, b.start)),
         slots: slots,
+        kind: b.kind === 'busy' ? 'busy' : 'focus',
         tags: tags
       };
     });
@@ -842,7 +869,7 @@
 
   function prune() {
     var live = {};
-    state.blocks.forEach(function (b) { live[b.id] = true; });
+    state.blocks.forEach(function (b) { if (!isBusy(b)) live[b.id] = true; });
     eachItem(function (it) { if (it.blockId && !live[it.blockId]) it.blockId = null; });
   }
 
@@ -1192,7 +1219,7 @@
   function showScheduleMenu(li, item) {
     var menu = mountMenu(li);
     var today = ymd(new Date());
-    var upcoming = blocksFrom(today).slice(0, 14);
+    var upcoming = blocksFrom(today).filter(function (b) { return !isBusy(b); }).slice(0, 14);
 
     if (item.blockId) {
       var off = document.createElement('button');
@@ -1327,14 +1354,21 @@
   }
 
   function blockEl(b) {
+    var busy = isBusy(b);
+    var colour = blockColor(b);
     var el = document.createElement('div');
-    el.className = 'cal-block';
+    el.className = 'cal-block' + (busy ? ' is-busy' : '');
     el.style.top = (b.start / SLOT_MIN * SLOT_H) + 'px';
     el.style.height = (b.slots * SLOT_H - 3) + 'px';
-    el.style.background = blockColor(b);
+    if (busy) {
+      el.style.background = tint(colour, 0.15);
+      el.style.borderLeft = '3px solid ' + colour;
+    } else {
+      el.style.background = colour;
+    }
     el.dataset.blockId = b.id;
 
-    var assigned = itemsInBlock(b.id);
+    var assigned = busy ? [] : itemsInBlock(b.id);
 
     var time = document.createElement('div');
     time.className = 'cal-block-time';
@@ -1362,20 +1396,22 @@
       openBlockEditor(b.id);
     });
 
-    el.addEventListener('dragover', function (e) {
-      if (!dragItemId) return;
-      e.preventDefault();
-      e.stopPropagation();
-      el.classList.add('is-over');
-    });
-    el.addEventListener('dragleave', function () { el.classList.remove('is-over'); });
-    el.addEventListener('drop', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      el.classList.remove('is-over');
-      var id = e.dataTransfer.getData('text/plain') || dragItemId;
-      if (id) { assign(id, b.id); render(); }
-    });
+    if (!busy) {
+      el.addEventListener('dragover', function (e) {
+        if (!dragItemId) return;
+        e.preventDefault();
+        e.stopPropagation();
+        el.classList.add('is-over');
+      });
+      el.addEventListener('dragleave', function () { el.classList.remove('is-over'); });
+      el.addEventListener('drop', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        el.classList.remove('is-over');
+        var id = e.dataTransfer.getData('text/plain') || dragItemId;
+        if (id) { assign(id, b.id); render(); }
+      });
+    }
 
     return el;
   }
@@ -1553,7 +1589,7 @@
       head.className = 'eis-modal-head';
       var titles = document.createElement('div');
       var h2 = document.createElement('h2');
-      h2.textContent = 'Focus block';
+      h2.textContent = isBusy(b) ? 'Busy block' : 'Focus block';
       var sub = document.createElement('p');
       sub.className = 'eis-modal-sub';
       var d = parseYmd(b.date);
@@ -1574,6 +1610,40 @@
       warn = document.createElement('p');
       warn.className = 'eis-warn';
       card.appendChild(warn);
+
+      // what the time is
+      var kindField = document.createElement('div');
+      kindField.className = 'eis-field';
+      kindField.innerHTML = '<span class="eis-label">What this time is</span>';
+      var kinds = document.createElement('div');
+      kinds.className = 'eis-kind';
+      [['focus', 'Focus', 'Holds tasks you work through'],
+       ['busy', 'Busy', 'Time simply blocked out']].forEach(function (k) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = k[1];
+        btn.title = k[2];
+        var on = (isBusy(b) ? 'busy' : 'focus') === k[0];
+        btn.setAttribute('aria-pressed', String(on));
+        btn.addEventListener('click', function () {
+          if (on) return;
+          var freed = 0;
+          if (k[0] === 'busy') {
+            itemsInBlock(b.id).forEach(function (rec) { rec.item.blockId = null; freed++; });
+          }
+          b.kind = k[0];
+          save();
+          renderCalendar();
+          draw();
+          if (freed) {
+            warn.textContent = freed + (freed === 1 ? ' task went' : ' tasks went')
+              + ' back to unscheduled.';
+          }
+        });
+        kinds.appendChild(btn);
+      });
+      kindField.appendChild(kinds);
+      card.appendChild(kindField);
 
       // tags
       var tagField = document.createElement('div');
@@ -1682,43 +1752,45 @@
       row.appendChild(lenField);
       card.appendChild(row);
 
-      // tasks
-      var taskField = document.createElement('div');
-      taskField.className = 'eis-field';
-      taskField.innerHTML = '<span class="eis-label">Tasks in this block</span>';
-      var box = document.createElement('div');
-      box.className = 'eis-tasks';
+      // tasks, which only a focus block has
+      if (!isBusy(b)) {
+        var taskField = document.createElement('div');
+        taskField.className = 'eis-field';
+        taskField.innerHTML = '<span class="eis-label">Tasks in this block</span>';
+        var box = document.createElement('div');
+        box.className = 'eis-tasks';
 
-      var rows = 0;
-      state.do.forEach(function (item) {
-        var mine = item.blockId === b.id;
-        if (!mine && (item.done || item.blockId)) return;
-        rows++;
-        var label = document.createElement('label');
-        label.className = 'eis-task-row';
-        var cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.checked = mine;
-        cb.addEventListener('change', function () {
-          assign(item.id, cb.checked ? b.id : null);
-          renderCalendar();
-          draw();
+        var rows = 0;
+        state.do.forEach(function (item) {
+          var mine = item.blockId === b.id;
+          if (!mine && (item.done || item.blockId)) return;
+          rows++;
+          var label = document.createElement('label');
+          label.className = 'eis-task-row';
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = mine;
+          cb.addEventListener('change', function () {
+            assign(item.id, cb.checked ? b.id : null);
+            renderCalendar();
+            draw();
+          });
+          var span = document.createElement('span');
+          span.textContent = item.text;
+          label.appendChild(cb);
+          label.appendChild(span);
+          box.appendChild(label);
         });
-        var span = document.createElement('span');
-        span.textContent = item.text;
-        label.appendChild(cb);
-        label.appendChild(span);
-        box.appendChild(label);
-      });
 
-      if (!rows) {
-        var none = document.createElement('p');
-        none.className = 'eis-empty';
-        none.textContent = 'No unscheduled tasks to put in here.';
-        box.appendChild(none);
+        if (!rows) {
+          var none = document.createElement('p');
+          none.className = 'eis-empty';
+          none.textContent = 'No unscheduled tasks to put in here.';
+          box.appendChild(none);
+        }
+        taskField.appendChild(box);
+        card.appendChild(taskField);
       }
-      taskField.appendChild(box);
-      card.appendChild(taskField);
 
       var foot = document.createElement('div');
       foot.className = 'eis-modal-foot';
